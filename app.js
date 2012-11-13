@@ -4,9 +4,9 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , redis = require('redis');
-
+  , routes = require('./routes');
+var csv = require('csv');
+var fs = require('fs');
 var app = module.exports = express.createServer();
 var io = require('socket.io').listen(app);
 
@@ -29,48 +29,59 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 
-// Real-time
-var clients = {};
+/* 
+  our 'database' is just a text file of video ids for now
+  we read into an in-memory array whenever the file changes
+*/
 
-io.sockets.on('connection', function(socket) {
-    var r = redis.createClient();
-    r.socket = socket;
-    r.subscribe('vid');
-    r.on('message', function(channel, message) {
-        console.log(channel + ':' + message);
-        var now = (new Date())/1000;
-        var vid = {vid:message, time:now};
-        socket.emit('vid', vid);
-    });
-    clients[socket.id] = r;
+var videos = [];
+var index = 0;
+var DATA_FILE = './data.txt';
+var intervalId = 0;
 
-    socket.on("disconnect", function() {
-        var r = clients[socket.id];
-        r.quit();
-        delete clients[socket.id];
-    });
+function sendVideo() {
+
+  //check if there is a newer db file
+
+  var vid = videos[index++ % videos.length];
+  console.log('Now playing: ' + vid);
+  var now = (new Date())/1000;
+  var data = {vid:vid, time:now};
+  io.sockets.emit('vid', data);
+}
+
+function readVideos() {
+  videos = [];
+  csv()
+  .from.path(DATA_FILE)
+  .transform(function(data){
+      data.unshift(data.pop());
+      return data;
+  })
+  .on('record',function(data, index){
+      videos.push(data[0]);
+  })
+  .on('end',function(count){
+      console.log('Read in', count, 'videos.');
+      intervalId = setInterval(sendVideo, 5000);
+  })
+  .on('error',function(error){
+      console.log(error.message);
+  });
+}
+
+fs.watchFile(DATA_FILE, function (curr, prev) {
+  console.log('Video list has changed, refreshing...');
+  clearInterval(intervalId);
+  readVideos();
 });
 
-var redisPoll = redis.createClient();
-var currentIdx = 0;
-// long running repetitive process
-setInterval(function() {
-  // read from the db
-  redisPoll.llen("dsc", function(err, reply) {
-    if (currentIdx >= reply) {
-      currentIdx = 0;
-    }
-    redisPoll.lindex("dsc", currentIdx, function(err, reply) {
-      console.log("error: " + err + " reply: " + reply);
-      var now = (new Date())/1000;
-      var vid = {vid:reply, time:now};
-      io.sockets.emit('vid', vid);
-      currentIdx += 1;
+// Real-time
+io.sockets.on('connection', function(socket) {
+    socket.on("disconnect", function() {
+
     });
-  })
-
-
-}, 5000 );
+});
 
 // Routes
 
@@ -80,3 +91,4 @@ app.get('/',  function(req, res){
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+readVideos();
