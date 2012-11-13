@@ -1,0 +1,33 @@
+we'll use node for the real-time part of delivering the page
+everything else will be a regular site (including the php)
+we'll run socket io and bind it to nginx so we have 2 parts
+
+socket io delivers videos and timestamps, as well as potential eyeball information
+client side is trivial -- make the connection once the player is ready
+run play(vidId, timestamp) on the event 'vid'
+on server side, we need some sort of producer. we can run a timer scheduler over a database
+or we can do the redis publish subscribe model? can we bind node to a python process?
+
+
+example embeddable video:
+UzceMsuTrKI
+soFlKb07lWo
+
+https://gdata.youtube.com/feeds/api/videos?q=dsc_0001&alt=json&format=5
+
+nodester setup
+user: wonga
+pass: rabbit
+
+app name: astronaut
+
+created redistogo account
+redis://wonga:5a60ab6fed654ffd7da7bbf475e10538@cod.redistogo.com:9439/
+
+try to use that with a local instance of astronaut
+
+go to 
+astronaut/web/site/cirrus/
+
+>> node app.js
+
