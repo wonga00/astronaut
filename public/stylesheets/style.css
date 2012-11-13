@@ -1,0 +1,94 @@
+*:focus {outline: none;}
+
+body {
+	background: #EEEEEE url(/images/burst.png) no-repeat top center fixed;
+	font-family:verdana, arial, helvetica, sans-serif;
+	font-size:80%;
+	color:#777;
+}
+
+#smooth {
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:5em;
+	width: 853px; 
+	height: 480px;
+	background-color:#777;
+	box-shadow:0 0 10px #777;
+}
+
+#buttons, #bedazzle{
+	margin-left:auto;
+	margin-right:auto;
+	width:853px;
+}
+
+#bedazzle {
+	position:relative;
+}
+
+#viewers{
+ 	position:absolute;
+	left:1em;
+	top:.5em;
+	width:600px;
+	text-align:left;
+	opacity:0.8;
+}
+
+#ticks {
+	display:inline;
+	letter-spacing:-2px;
+}
+
+#count {
+	display:inline;
+}
+
+#mute {
+	position:absolute;
+	right:1em;
+	top:.5em;
+	width:120px;
+	text-align:center;
+	vertical-align:center;
+}
+
+#buttons {
+	margin-top:5em;
+	font-size:1.2em;
+}
+
+#back {
+	display:inline;
+	width:40%;
+	text-align:right;
+}
+
+#hold {
+	display:inline;
+	width:20%;
+	text-align:center;
+}
+
+#live {
+	display:inline;
+	width:40%;
+	text-align:left;
+}
+
+#footer {
+	position:fixed;
+	bottom:1em;
+	left:1em;
+	font-size:0.5em;
+}
+
+#footer a {
+	color:#999;
+	text-decoration:none;
+}
+
+#feedback {
+	background-color:#111;
+}
