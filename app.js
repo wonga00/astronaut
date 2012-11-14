@@ -52,7 +52,7 @@ app.configure('production', function(){
 
 var videos = [];
 var index = 0;
-var DATA_FILE = './data.txt';
+var DATA_FILE = __dirname + '/data.txt';
 var intervalId = 0;
 
 function sendVideo() {
