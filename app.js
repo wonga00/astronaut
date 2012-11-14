@@ -99,7 +99,7 @@ io.sockets.on('connection', function(socket) {
 // Routes
 
 app.get('/',  function(req, res){
-  res.sendfile('views/index.html');
+  res.sendfile(__dirname + '/views/index.html');
 });
 
 server.listen(process.env['app_port'] || 3000);
