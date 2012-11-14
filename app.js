@@ -4,12 +4,20 @@
  */
 
 var express = require('express')
-  , routes = require('./routes');
+  , routes = require('./routes')
+  , app = express()
+  , http = require('http')
+  , server = http.createServer(app)
+  , io = require('socket.io').listen(server)
+  , csv = require('csv')
+  , fs = require('fs');
+
+  /*
 var csv = require('csv');
 var fs = require('fs');
-var app = module.exports = express.createServer();
+var app = module.exports = express();
 var io = require('socket.io').listen(app);
-
+*/
 // Configuration
 
 app.configure(function(){
@@ -32,6 +40,14 @@ app.configure('production', function(){
 /* 
   our 'database' is just a text file of video ids for now
   we read into an in-memory array whenever the file changes
+
+  interface
+
+  var broadcaster = require('broadcaster');
+  broadcaster().
+  .file(DATA_FILE)
+  .client(io.sockets);
+
 */
 
 var videos = [];
@@ -40,9 +56,6 @@ var DATA_FILE = './data.txt';
 var intervalId = 0;
 
 function sendVideo() {
-
-  //check if there is a newer db file
-
   var vid = videos[index++ % videos.length];
   console.log('Now playing: ' + vid);
   var now = (new Date())/1000;
@@ -70,11 +83,11 @@ function readVideos() {
   });
 }
 
-fs.watchFile(DATA_FILE, function (curr, prev) {
-  console.log('Video list has changed, refreshing...');
-  clearInterval(intervalId);
-  readVideos();
-});
+// fs.watchFile(DATA_FILE, function (curr, prev) {
+//   console.log('Video list has changed, refreshing...');
+//   clearInterval(intervalId);
+//   readVideos();
+// });
 
 // Real-time
 io.sockets.on('connection', function(socket) {
@@ -89,6 +102,6 @@ app.get('/',  function(req, res){
   res.sendfile('views/index.html');
 });
 
-app.listen(3000);
-console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+server.listen(3000);
+console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
 readVideos();
