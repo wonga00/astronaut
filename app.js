@@ -102,6 +102,6 @@ app.get('/',  function(req, res){
   res.sendfile('views/index.html');
 });
 
-server.listen(3000);
+server.listen(process.env['app_port'] || 3000);
 console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
 readVideos();
