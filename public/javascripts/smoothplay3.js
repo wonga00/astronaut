@@ -294,16 +294,16 @@ function onYouTubePlayerReady(playerId) {
     var player = document.getElementById(playerId);
 
     if (playerId == "p1") {
-        player.addEventListener("onStateChange", "onStateChange_1");
-        player.addEventListener("onError","onError_1");
+        player.addEventListener("onStateChange", "onStateChange1");
+        player.addEventListener("onError","onError1");
     }
     else if (playerId == "p2") {
-        player.addEventListener("onStateChange", "onStateChange_2");
-        player.addEventListener("onError","onError_2");
+        player.addEventListener("onStateChange", "onStateChange2");
+        player.addEventListener("onError","onError2");
     }
     else {
-        player.addEventListener("onStateChange", "onStateChange_3");
-        player.addEventListener("onError","onError_3");
+        player.addEventListener("onStateChange", "onStateChange3");
+        player.addEventListener("onError","onError3");
     }
 
     if (SmoothPlayer.count == 3) {
@@ -348,26 +348,26 @@ function stateHelper(player, state) {
     }
 }
 
-function onStateChange_1(state) {
+function onStateChange1(state) {
     stateHelper(p1, state);
 }
 
-function onStateChange_2(state) {
+function onStateChange2(state) {
     stateHelper(p2, state);
 }
 
-function onStateChange_3(state) {
+function onStateChange3(state) {
     stateHelper(p3, state);
 }
 
-function onError_1(error) {
+function onError1(error) {
     console.log("Error on p1: " + ytErrors[error]);
 }
 
-function onError_2(error) {
+function onError2(error) {
     console.log("Error on p2: " + ytErrors[error]);
 }
 
-function onError_3(error) {
+function onError3(error) {
     console.log("Error on p3: " + ytErrors[error]);
 }
