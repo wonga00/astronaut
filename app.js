@@ -49,17 +49,19 @@ app.configure('production', function(){
   .client(io.sockets);
 
 */
-
+var VIDEO_INTERVAL = 5000;
 var videos = [];
 var index = 0;
 var DATA_FILE = __dirname + '/data.txt';
 var intervalId = 0;
+var currentVid = {};
 
 function sendVideo() {
   var vid = videos[index++ % videos.length];
   console.log('Now playing: ' + vid);
   var now = (new Date())/1000;
   var data = {vid:vid, time:now};
+  currentVid = data;
   io.sockets.emit('vid', data);
 }
 
@@ -76,7 +78,7 @@ function readVideos() {
   })
   .on('end',function(count){
       console.log('Read in', count, 'videos.');
-      intervalId = setInterval(sendVideo, 5000);
+      intervalId = setInterval(sendVideo, VIDEO_INTERVAL);
   })
   .on('error',function(error){
       console.log(error.message);
@@ -91,6 +93,7 @@ function readVideos() {
 
 // Real-time
 io.sockets.on('connection', function(socket) {
+    socket.emit('vid', currentVid);
     socket.on("disconnect", function() {
 
     });
@@ -100,6 +103,10 @@ io.sockets.on('connection', function(socket) {
 
 app.get('/',  function(req, res){
   res.sendfile(__dirname + '/views/index.html');
+});
+
+app.get('/test/',  function(req, res){
+  res.sendfile(__dirname + '/views/smooth.html');
 });
 
 server.listen(process.env['app_port'] || 3000);
