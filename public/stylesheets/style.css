@@ -15,6 +15,7 @@ body {
 	height: 480px;
 	background-color:#777;
 	box-shadow:0 0 10px #777;
+	overflow: hidden;
 }
 
 #buttons, #bedazzle{

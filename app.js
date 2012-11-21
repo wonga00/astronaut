@@ -56,13 +56,35 @@ var DATA_FILE = __dirname + '/data.txt';
 var intervalId = 0;
 var currentVid = {};
 
+/* 
+  shuffle algorithm taken from
+  http://sedition.com/perl/javascript-fy.html
+*/
+function fisherYates ( myArray ) {
+  var i = myArray.length;
+  if ( i == 0 ) return false;
+  while ( --i ) {
+     var j = Math.floor( Math.random() * ( i + 1 ) );
+     var tempi = myArray[i];
+     var tempj = myArray[j];
+     myArray[i] = tempj;
+     myArray[j] = tempi;
+   }
+}
+
 function sendVideo() {
-  var vid = videos[index++ % videos.length];
+  var vid = videos[index++];
   console.log('Now playing: ' + vid);
   var now = (new Date())/1000;
   var data = {vid:vid, time:now};
   currentVid = data;
   io.sockets.emit('vid', data);
+
+  //shuffle array if at the end of the list
+  if (index == videos.length) {
+    fisherYates(videos);
+    index = 0;
+  }
 }
 
 function readVideos() {
