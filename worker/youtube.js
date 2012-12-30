@@ -16,7 +16,6 @@ function parseVids(obj) {
     var dataObj = obj['data']
     if (dataObj.hasOwnProperty('items')) {
       return dataObj['items'].map(function(item) {
-        console.log(item['id']);
         return item['id']
       });
     } 

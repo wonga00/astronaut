@@ -55,6 +55,10 @@ Array.prototype.shuffle = function() {
 }
 
 function sendVideo() {
+  if (index >= videos.length) {
+    index = 0;
+    return;
+  }
   var vid = videos[index++];
   var now = (new Date())/1000;
   var data = {vid:vid, time:now};
@@ -88,7 +92,7 @@ function readVideos() {
 }
 
 function getFreshVideos() {
-  youtube.getDscs(1114, 1115, function(vids) {
+  youtube.getDscs(980, 1180, function(vids) {
     clearInterval(intervalId);
     videos = vids.shuffle();
     index = 0;
