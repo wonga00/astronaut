@@ -118,6 +118,6 @@ server.listen(process.env['app_port'] || 3000);
 console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
 readVideos();
 
-getFreshVideos();
-//refresh everyday
-setInterval(getFreshVideos, 86400000);
+// getFreshVideos();
+// //refresh everyday
+// setInterval(getFreshVideos, 86400000);
