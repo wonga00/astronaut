@@ -92,7 +92,7 @@ function readVideos() {
 }
 
 function getFreshVideos() {
-  youtube.getDscs(980, 1180, function(vids) {
+  youtube.getDscs(1, 199, function(vids) {
     clearInterval(intervalId);
     videos = vids.shuffle();
     index = 0;
