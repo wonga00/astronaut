@@ -134,25 +134,3 @@ app.get('/test/',  function(req, res){
 server.listen(process.env['app_port'] || 3000);
 console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
 readVideos();
-
-
-// Worker
-var spawn = require('child_process').spawn;
-
-function getData() {
-    //var worker = spawn('python', ['dummy.py'], {cwd:__dirname + '/worker/'});
-    var worker = spawn('ls');
-    worker.stdout.on('data', function(data) {
-      console.log('stdout:' + data.toString());
-    });
-
-    worker.stderr.on('data', function(data) {
-      console.log('stderr:', data.toString());
-    });
-
-    worker.on('exit', function(code) {
-      console.log('process exited with code', code);
-    });
-}
-
-setInterval(getData, 5000)
