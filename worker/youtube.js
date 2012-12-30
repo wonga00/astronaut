@@ -16,7 +16,7 @@ function parseVids(obj) {
     var dataObj = obj['data']
     if (dataObj.hasOwnProperty('items')) {
       return dataObj['items'].map(function(item) {
-        //console.log(item['id']);
+        console.log(item['id']);
         return item['id']
       });
     } 
@@ -27,7 +27,8 @@ function parseVids(obj) {
 function getDsc(dsc, vidCallback) {
 
   var vids = [];
-  var path = "http://gdata.youtube.com/feeds/api/videos?";
+  var host = "gdata.youtube.com"
+  var path = "/feeds/api/videos?";
   var params = {
     'embed': 'allowed',
     'v': 2,
@@ -40,9 +41,9 @@ function getDsc(dsc, vidCallback) {
     
     params['start-index'] = startIndex
     //refactor into getJson
-    var url = path + querystring.stringify(params);
-    console.log(url);
-    http.get(url, function(res) {
+    var thePath = path + querystring.stringify(params);
+    console.log(thePath);
+    http.get({host: host, port: 80, path: thePath}, function(res) {
       console.log("Got response: " + res.statusCode);
         var data = "";
         res.on('data', function (chunk) {

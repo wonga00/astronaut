@@ -88,7 +88,7 @@ function readVideos() {
 }
 
 function getFreshVideos() {
-  youtube.getDscs(114, 115, function(vids) {
+  youtube.getDscs(1114, 1115, function(vids) {
     clearInterval(intervalId);
     videos = vids.shuffle();
     index = 0;
@@ -118,13 +118,6 @@ server.listen(process.env['app_port'] || 3000);
 console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
 readVideos();
 
-var http = require('http');
-http.get({host: 'www.google.com', port: 80, path: '/'}, function(res) {
-  console.log("Got response: " + res.statusCode);
-}).on('error', function(e) {
-  console.log("Got error: " + e.message);
-});
-
-// getFreshVideos();
-// //refresh everyday
-// setInterval(getFreshVideos, 86400000);
+getFreshVideos();
+//refresh everyday
+setInterval(getFreshVideos, 86400000);
