@@ -29,9 +29,10 @@ function getDsc(dsc, vidCallback) {
   var host = "gdata.youtube.com"
   var path = "/feeds/api/videos?";
   var params = {
-    'embed': 'allowed',
-    'v': 2,
-    'alt': 'jsonc'
+    embed: 'allowed',
+    v: 2,
+    alt: 'jsonc',
+    time: 'this_week'
   };
   params['q'] = 'dsc' + pad(dsc, 4);
 
