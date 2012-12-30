@@ -16,6 +16,7 @@ var express = require('express')
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
@@ -36,6 +37,7 @@ var index = 0;
 var DATA_FILE = __dirname + '/data.txt';
 var intervalId = 0;
 var currentVid = {};
+var lastRefresh = new Date();
 
 /* 
   fisher-yates shuffle algorithm taken from
@@ -97,6 +99,7 @@ function getFreshVideos() {
     videos = vids.shuffle();
     index = 0;
     intervalId = setInterval(sendVideo, VIDEO_INTERVAL);
+    lastRefresh = new Date();
   });
 }
 
@@ -116,6 +119,16 @@ app.get('/',  function(req, res){
 
 app.get('/test/',  function(req, res){
   res.sendfile(__dirname + '/views/smooth.html');
+});
+
+app.get('/z/', function(req, res) {
+  res.render('admin', {
+    layout: 'layout.jade',
+    title: 'Admin',
+    numVideos: videos.length,
+    numConnections: io.sockets.clients().length,
+    lastRefresh: lastRefresh
+  });
 });
 
 server.listen(process.env['app_port'] || 3000);
