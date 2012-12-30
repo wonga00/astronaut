@@ -141,7 +141,7 @@ var spawn = require('child_process').spawn;
 
 function getData() {
     //var worker = spawn('python', ['dummy.py'], {cwd:__dirname + '/worker/'});
-    var worker = spawn('which', ['python']);
+    var worker = spawn('ls');
     worker.stdout.on('data', function(data) {
       console.log('stdout:' + data.toString());
     });
