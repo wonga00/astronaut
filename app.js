@@ -118,6 +118,13 @@ server.listen(process.env['app_port'] || 3000);
 console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
 readVideos();
 
+var http = require('http');
+http.get('http://www.google.com', function(res) {
+  console.log("Got response: " + res.statusCode);
+}).on('error', function(e) {
+  console.log("Got error: " + e.message);
+});
+
 // getFreshVideos();
 // //refresh everyday
 // setInterval(getFreshVideos, 86400000);
