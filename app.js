@@ -10,19 +10,12 @@ var express = require('express')
   , server = http.createServer(app)
   , io = require('socket.io').listen(server)
   , csv = require('csv')
-  , fs = require('fs');
+  , youtube = require('./worker/youtube');
 
-  /*
-var csv = require('csv');
-var fs = require('fs');
-var app = module.exports = express();
-var io = require('socket.io').listen(app);
-*/
 // Configuration
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
-  //app.set('view engine', 'jade');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
@@ -37,18 +30,6 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 
-/* 
-  our 'database' is just a text file of video ids for now
-  we read into an in-memory array whenever the file changes
-
-  interface
-
-  var broadcaster = require('broadcaster');
-  broadcaster().
-  .file(DATA_FILE)
-  .client(io.sockets);
-
-*/
 var VIDEO_INTERVAL = 5000;
 var videos = [];
 var index = 0;
@@ -57,24 +38,24 @@ var intervalId = 0;
 var currentVid = {};
 
 /* 
-  shuffle algorithm taken from
+  fisher-yates shuffle algorithm taken from
   http://sedition.com/perl/javascript-fy.html
 */
-function fisherYates ( myArray ) {
-  var i = myArray.length;
-  if ( i == 0 ) return false;
+Array.prototype.shuffle = function() {
+  var i = this.length;
+  if ( i == 0 ) return;
   while ( --i ) {
      var j = Math.floor( Math.random() * ( i + 1 ) );
-     var tempi = myArray[i];
-     var tempj = myArray[j];
-     myArray[i] = tempj;
-     myArray[j] = tempi;
+     var tempi = this[i];
+     var tempj = this[j];
+     this[i] = tempj;
+     this[j] = tempi;
    }
+   return this;
 }
 
 function sendVideo() {
   var vid = videos[index++];
-  console.log('Now playing: ' + vid);
   var now = (new Date())/1000;
   var data = {vid:vid, time:now};
   currentVid = data;
@@ -82,13 +63,12 @@ function sendVideo() {
 
   //shuffle array if at the end of the list
   if (index == videos.length) {
-    fisherYates(videos);
+    videos.shuffle();
     index = 0;
   }
 }
 
 function readVideos() {
-  videos = [];
   csv()
   .from.path(DATA_FILE)
   .transform(function(data){
@@ -107,11 +87,14 @@ function readVideos() {
   });
 }
 
-// fs.watchFile(DATA_FILE, function (curr, prev) {
-//   console.log('Video list has changed, refreshing...');
-//   clearInterval(intervalId);
-//   readVideos();
-// });
+function getFreshVideos() {
+  youtube.getDscs(114, 115, function(vids) {
+    clearInterval(intervalId);
+    videos = vids.shuffle();
+    index = 0;
+    intervalId = setInterval(sendVideo, VIDEO_INTERVAL);
+  });
+}
 
 // Real-time
 io.sockets.on('connection', function(socket) {
@@ -134,3 +117,7 @@ app.get('/test/',  function(req, res){
 server.listen(process.env['app_port'] || 3000);
 console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
 readVideos();
+
+getFreshVideos();
+//refresh everyday
+setInterval(getFreshVideos, 86400000);
