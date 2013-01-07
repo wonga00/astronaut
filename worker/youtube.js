@@ -2,6 +2,9 @@
   getting dsc videos
 */
 
+// seconds
+var MINIMUM_DURATION = 10
+
 var http = require('http'),
     querystring = require('querystring');
 
@@ -15,7 +18,9 @@ function parseVids(obj) {
   if (obj.hasOwnProperty('data')) {
     var dataObj = obj['data']
     if (dataObj.hasOwnProperty('items')) {
-      return dataObj['items'].map(function(item) {
+      return dataObj['items'].filter(function(item) {
+        return (item['duration'] > MINIMUM_DURATION);
+      }).map(function(item) {
         return item['id']
       });
     } 
@@ -28,6 +33,8 @@ function getDsc(dsc, vidCallback) {
   var vids = [];
   var host = "gdata.youtube.com"
   var path = "/feeds/api/videos?";
+
+  // see https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters#Searching_for_Videos
   var params = {
     embed: 'allowed',
     v: 2,
