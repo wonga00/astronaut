@@ -84,6 +84,7 @@ var SmoothPlayer = {
     setVisible : function(player) {
         player.height = this.height;
         player.width = this.width;
+        player.className = "playing";
         if (this.muted) {
             player.mute();
         } else {
@@ -94,6 +95,7 @@ var SmoothPlayer = {
     setHidden : function(player) {
         player.width = 1;
         player.height = 1;
+        player.className = "";
         player.mute();
     },
 
