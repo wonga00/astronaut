@@ -1,9 +1,11 @@
 /*
-  getting dsc videos
+  getting youtube videos
 */
 
 // seconds
 var MINIMUM_DURATION = 10
+// milliseconds
+var REQUEST_DELAY = 500
 
 var http = require('http'),
     querystring = require('querystring');
@@ -28,26 +30,38 @@ function parseVids(obj) {
   return [];
 }
 
-function getDsc(dsc, vidCallback) {
+// tags is an array of number prefixes
+// ex. dsc or img
+function getVids(tags, startIndex, endIndex, vidCallback) {
 
   var vids = [];
   var host = "gdata.youtube.com"
   var path = "/feeds/api/videos?";
+  var queries = [];
 
-  // see https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters#Searching_for_Videos
-  var params = {
-    embed: 'allowed',
-    v: 2,
-    alt: 'jsonc',
-    time: 'this_week'
-  };
-  params['q'] = 'dsc' + pad(dsc, 4);
+  // construct queries to consume
+  for (var i = 0; i < tags.length; i++) {
+    var tag = tags[i];
+    var j = startIndex;
+    for (var j=endIndex; j >= startIndex; j--) {
+        // see https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters#Searching_for_Videos
+        var params = {
+          embed: 'allowed',
+          v: 2,
+          alt: 'jsonc',
+          time: 'this_week',
+          "start-index": 1
+        };
+        params['q'] = tag + pad(j, 4);
+        queries.push(params);
+    }
+  }
 
-  //recursively get all the videos for one dsc 
-  function getVids(startIndex) {
-    
-    params['start-index'] = startIndex
-    //refactor into getJson
+  //worker for the queue of queries
+  function work() {
+    var params = queries.pop();
+    console.log('search for: ', params['q']);
+    var startIndex = params['start-index'];
     var thePath = path + querystring.stringify(params);
     console.log(thePath);
     http.get({host: host, port: 80, path: thePath}, function(res) {
@@ -60,12 +74,16 @@ function getDsc(dsc, vidCallback) {
           var obj = JSON.parse(data);
           var parsedVids = parseVids(obj);
           if (parsedVids.length > 0) {
+            console.log('retrieved', parsedVids.length, 'vids');
             vids = vids.concat(parsedVids);
-            setTimeout(function() {
-              getVids(vids.length + 1, dsc);
-            }, 500);
+            //enqueue a new request
+            params["start-index"] = startIndex + parsedVids.length;
+            queries.push(params);
+          }
+          if (queries.length == 0) {
+            vidCallback(vids);
           } else {
-            vidCallback(vids)
+            setTimeout(work, REQUEST_DELAY);
           }
         });
     }).on('error', function(e) {
@@ -74,23 +92,8 @@ function getDsc(dsc, vidCallback) {
     });
   }
 
-  getVids(1);
+  //kick it off
+  work();
 }
 
-exports.getDscs = function(startDsc, endDsc, vidCallback) {
-  var allVids = [];
-  function myGetDsc(dsc) {
-    getDsc(dsc, function(vids) {
-      console.log('Retrieved', vids.length, 'vids', 'with dsc', dsc);
-      allVids = allVids.concat(vids);
-      if (dsc < endDsc) {
-        setTimeout(function() {
-          myGetDsc(dsc + 1)
-        }, 500);
-      } else {
-        vidCallback(allVids);
-      }
-    });
-  }
-  myGetDsc(startDsc);
-}
+exports.getVids = getVids;
