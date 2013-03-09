@@ -1,6 +1,17 @@
 ## ASTRONAUT.IO
 
-Pulls in videos from youtube. Search criteria is DSCXXXX with upload time this week. This approximates the data set of home videos created in the last week.
+A Feed of the Present 
+
+See the site live [here](http://astronaut.io).
+
+### About ###
+
+The server currently pulls in videos daily from youtube. Search criteria is [TAG]XXXX with upload time this week, where TAG is a raw video prefix such as 'dsc' or 'img'. 
+This search turns out to be a good approximation for the data set of home videos created in the last week.
+example embeddable video ids:
+
+    UzceMsuTrKI
+    soFlKb07lWo
 
 ### Deployment
 
@@ -14,17 +25,3 @@ to get logs:
 nodester app logs astronaut
 ```
 
-### INFO
-example embeddable video:
-
-    UzceMsuTrKI
-    soFlKb07lWo
-
-## TODO
-* add tooltips to UI
-* graceful first video -- fade in
-* admin page
-    * see when the last refresh is
-    * what is in the queue
-    * the current video playing
-    * how many sockets are open
