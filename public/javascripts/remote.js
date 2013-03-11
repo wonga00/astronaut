@@ -81,7 +81,7 @@ $(document).ready(function() {
         height = 400,
         left   = ($(window).width()-width)/2,
         top    = ($(window).height()-height)/2,
-        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Flocalhost%3A3000%2F&text=I%20found%20this%20video:&tw_p=tweetbutton&url=http%3A%2F%2Fwww.youtube.com/watch?v='+SmoothPlayer.currentVid()+'&via=astronautdotio',
+        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Flocalhost%3A3000%2F&text=I%20found%20this%20video%20on%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fwww.youtube.com/watch?v='+SmoothPlayer.currentVid()+'&via=astronautdotio',
         opts   = 'status=1' +
                  ',width='  + width  +
                  ',height=' + height +
@@ -119,7 +119,7 @@ $(document).ready(function() {
         else if (event.which == 37) { // detect 'left'
         	backPressed();
         }
-        else if (event.which == 38) { //detect 'up'
+        else if (event.which == 40) { //detect 'up'
         	holdPressed();
         }
         else if (event.which == 39) { //detect 'right'

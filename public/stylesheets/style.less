@@ -14,28 +14,34 @@ body {
 }
 
 .h1 {
-  font-family: "adelle", "Roboto-Light", sans-serif;
+  font-family: "adelle", sans-serif;
   font-size: 44px;
   line-height:50px;
-  font-weight:100;
+  font-weight:300;
 }
 
 .h2 {
-  font-family: "Roboto-Medium", sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 14px;
   text-transform:uppercase;
+  font-weight:500;
 }
 
 .h4 {
-  font-family:"Roboto-Light", sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 14px;
   line-height:23px;
-  font-weight:normal;
+  font-weight:100;
 }
 
 code {
-  font-family:"Monaco", "Roboto-Light", sans-serif;
+  font-family:"Monaco", sans-serif;
   font-size:12px;
+}
+
+p {
+  margin-top:0;
+  margin-bottom:20px;
 }
 
 #top-section {
@@ -176,6 +182,8 @@ code {
 
 .control-button#share-app {
   .h2;
+  margin-top:0;
+  margin-bottom:30px;
   display:block;
   width:279px;
   height:@button-height - @button-border-top-width - @button-border-bottom-width - @share-app-button-padding-top;
@@ -276,7 +284,9 @@ a {
   border-radius:3px;
   color:darken(@primary-accent,40%);
   text-decoration:none;
-  font-weight:500;
+  &:hover {
+    color:darken(@primary-accent,50%);
+  }
 }
 
 .inline-icon {
@@ -327,5 +337,23 @@ only screen and (min-device-pixel-ratio: 2) {
   .control-button#share-app .icon {
     background: url('/images/glyphicons_222_share@2x.png') no-repeat center;
     background-size:24px 18px;
+  }
+
+  .inline-icon {
+    &.hold {
+      background: url('/images/glyphicons_halflings_073_stop@2x.png') no-repeat center;
+      background-size:9px 9px;
+    }
+    &.back {
+      background: url('/images/glyphicons_halflings_090_arrow-left@2x.png') no-repeat center;
+      background-size:12px 10px;
+    }
+    &.live {
+      background: url('/images/glyphicons_halflings_091_arrow-right@2x.png') no-repeat center;
+      background-size:12px 10px;
+    }
+    &.share {
+      background: url('/images/glyphicons_halflings_094_share-alt.png') no-repeat center;
+    }
   }
 }
