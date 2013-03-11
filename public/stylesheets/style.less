@@ -1,0 +1,331 @@
+*:focus {outline: none;}
+
+@grid-unit:80px;
+@primary-accent:rgb(248,248,248);
+@loud-button:rgb(28,188,156);
+@loud-button:rgb(65,152,222);
+@loud-button:rgb(224,78,60);
+@loud-button:rgb(248,248,248);
+
+body {
+  margin:0;
+  padding:0;
+  background-color:@primary-accent;
+}
+
+.h1 {
+  font-family: "adelle", "Roboto-Light", sans-serif;
+  font-size: 44px;
+  line-height:50px;
+  font-weight:100;
+}
+
+.h2 {
+  font-family: "Roboto-Medium", sans-serif;
+  font-size: 14px;
+  text-transform:uppercase;
+}
+
+.h4 {
+  font-family:"Roboto-Light", sans-serif;
+  font-size: 14px;
+  line-height:23px;
+  font-weight:normal;
+}
+
+code {
+  font-family:"Monaco", "Roboto-Light", sans-serif;
+  font-size:12px;
+}
+
+#top-section {
+  //background: url('/images/angry.png');
+  background-color:darken(@primary-accent,2%);
+  padding-top:@grid-unit;
+  border-bottom:2px solid darken(@primary-accent,2%);
+}
+
+#bottom-section {
+  width:960px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+#smooth-container {
+  background-color:darken(@primary-accent,9%);
+  margin-left:auto;
+  margin-right:auto;
+  width: 960px;
+  height: 540px;
+}
+
+#smooth {
+  display:relative;
+  background-color:@primary-accent;
+  width: 960px;
+  height: 540px;
+  overflow: hidden;
+}
+
+@button-height:38px;
+@button-width:40px;
+@button-gap:0px;
+@button-border-top-width:1px;
+@button-border-right-width:1px;
+@button-border-bottom-width:1px;
+@button-border-left-width:1px;
+@button-border-radius:8px;
+
+#buttons-container {
+  position:relative;
+  width:960px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+#buttons{
+  margin-left:auto;
+  margin-right:auto;
+  height:@grid-unit;
+  width:@button-width*3+@button-gap*4;
+
+  &:hover .control-button{
+  }
+}
+
+.control-button, {
+  display:block;
+  float:left;
+  position:relative;
+  width:@button-width - @button-border-right-width - @button-border-left-width;
+  height:@button-height - @button-border-top-width - @button-border-bottom-width;
+  margin-top:(@grid-unit - @button-height)/2;
+  margin-left:@button-gap;
+  border-radius:@button-border-radius;
+  border-top:@button-border-top-width solid;
+  border-right:@button-border-right-width solid;
+  border-bottom:@button-border-bottom-width solid;
+  border-left:@button-border-left-width solid;
+  background-color:darken(@primary-accent,9%);
+  border-color:darken(@primary-accent,10%);
+  //border-color:rgba(0,0,0,0.01);
+  //background-color:rgba(0,0,0,0.10);
+
+  &:hover{
+    cursor:pointer;
+    z-index:3;
+    .icon {opacity:0.5;}
+  }
+
+  &:active {
+    z-index:3;
+    .icon {opacity:0.5;}
+  }
+
+  &.pressed {
+    //background-color:black;
+  }
+
+  &.inactive {
+    background-color:darken(@primary-accent,16%);
+    border-color:darken(@primary-accent,17%);
+    cursor:default;
+    z-index:2;
+    .icon {opacity:0.12;}
+
+    &#hold,&#live {
+      border-color:darken(@primary-accent,17%);
+    }
+    &#hold.back-pressed {
+      border-left-color:transparent;
+    }
+  }
+
+  .icon {
+    width:100%;
+    height:100%;
+    opacity:0.2;
+  }
+}
+
+.control-button#hold .icon {
+  background: url('/images/glyphicons_175_stop.png') no-repeat center;
+  background-size:14px 14px;
+}
+
+.control-button#live .icon {
+  background: url('/images/glyphicons_211_right_arrow.png') no-repeat center;
+  background-size:20px 18px;
+}
+
+.control-button#back .icon {
+  background: url('/images/glyphicons_210_left_arrow.png') no-repeat center;
+  background-size:20px 18px;
+}
+
+.control-button#share-video {
+  position:absolute;
+  right:0;
+  .icon {
+    background: url('/images/glyphicons_222_share.png') no-repeat center;
+    background-size:20px 18px;
+  }
+}
+
+@share-app-button-padding-top:(@button-height - 23)/2;
+
+.control-button#share-app {
+  .h2;
+  display:block;
+  width:279px;
+  height:@button-height - @button-border-top-width - @button-border-bottom-width - @share-app-button-padding-top;
+  text-align:center;
+  padding-top:@share-app-button-padding-top;
+  color:darken(@primary-accent,32%);
+  &:hover {
+    color:darken(@primary-accent,54%);
+  }
+}
+
+#mute {
+  display:none;
+}
+
+#hold {
+  border-radius:0;
+  // margin-left:-1px;
+  // margin-right:-1px;
+  border-left-color:transparent;
+  border-right-color:transparent;
+  &.live-pressed {
+    border-right-color:darken(@primary-accent,8%);
+  }
+}
+
+#live {
+  border-radius:0 @button-border-radius @button-border-radius 0;
+  border-left-color:transparent;
+  &.hold-pressed {
+    border-left-color:darken(@primary-accent,8%);
+  }
+}
+
+#back {
+  border-radius:@button-border-radius 0 0 @button-border-radius;
+  border-right-color:transparent;
+  &.hold-pressed {
+    border-right-color:darken(@primary-accent,8%);
+  }
+}
+
+#headline-container {
+  margin-top:50px;
+  height:50px;
+}
+
+#headline {
+  .h1;
+  float:left;
+  width:100%;
+  text-align:center;
+  color:darken(@primary-accent,50%);
+}
+
+#tweet-button {
+  display:inline-block;
+  margin-top:4px;
+}
+
+#description {
+  .h4;
+  margin-top:50px;
+  -moz-column-count:3;
+  -moz-column-gap:@grid-unit/2;
+  -webkit-column-count:3;
+  -webkit-column-gap:@grid-unit/2;
+  text-align:justify;
+  color:darken(@primary-accent,40%);
+
+  code {
+    color:darken(@primary-accent,50%);
+  }
+}
+
+#footer {
+  .h4;
+  margin-top:50px;
+  height:50px;
+  color:rgba(0,0,0,0.6);
+}
+
+.tooltip {
+  font-family:sans-serif;
+  font-weight:bold;
+  font-size:11px;
+  .tooltip-inner {
+    background-color:darken(@primary-accent,80%);
+  }
+  &.top .tooltip-arrow {
+    border-top-color:darken(@primary-accent,80%);
+  }
+}
+
+a {
+  background-color:darken(@primary-accent,4%);
+  padding:2px 6px;
+  border-radius:3px;
+  color:darken(@primary-accent,40%);
+  text-decoration:none;
+  font-weight:500;
+}
+
+.inline-icon {
+  display:inline-block;
+  height:10px;
+  width:14px;
+  opacity:0.5;
+
+  &.hold {
+    background: url('/images/glyphicons_halflings_073_stop.png') no-repeat center;
+  }
+  &.back {
+    background: url('/images/glyphicons_halflings_090_arrow-left.png') no-repeat center;
+  }
+  &.live {
+    background: url('/images/glyphicons_halflings_091_arrow-right.png') no-repeat center;
+  }
+  &.share {
+    background: url('/images/glyphicons_halflings_094_share-alt.png') no-repeat center;
+  }
+}
+
+
+@media only screen and (min--moz-device-pixel-ratio: 2),
+only screen and (-o-min-device-pixel-ratio: 2/1),
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (min-device-pixel-ratio: 2) {
+  .control-button#hold .icon {
+    background: url('/images/glyphicons_175_stop@2x.png') no-repeat center;
+    background-size:14px 14px;
+  }
+
+  .control-button#live .icon {
+    background: url('/images/glyphicons_211_right_arrow@2x.png') no-repeat center;
+    background-size:20px 18px;
+  }
+
+  .control-button#back .icon {
+    background: url('/images/glyphicons_210_left_arrow@2x.png') no-repeat center;
+    background-size:20px 18px;
+  }
+
+  .control-button#share-video .icon {
+    background: url('/images/glyphicons_222_share@2x.png') no-repeat center;
+    background-size:24px 18px;
+  }
+
+  .control-button#share-app .icon {
+    background: url('/images/glyphicons_222_share@2x.png') no-repeat center;
+    background-size:24px 18px;
+  }
+}
