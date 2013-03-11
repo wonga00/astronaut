@@ -45,6 +45,15 @@ app.get('/',  function(req, res){
   res.sendfile(__dirname + '/views/index.html');
 });
 
+app.get('/v/:vidId', function(req, res) {
+  var vidId = req.params.vidId;
+  //use render here
+  res.render('index.html', {
+    title: 'Shared',
+    vidId: vidId
+  });
+});
+
 app.get('/z/', function(req, res) {
   res.render('admin', {
     layout: 'layout.jade',
