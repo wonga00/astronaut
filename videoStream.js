@@ -88,7 +88,7 @@ function readVideos() {
 }
 
 function getFreshVideos() {
-  youtube.getVids(['dsc', 'img', 'mov'], 3, 454, function(vids) {
+  youtube.getVids(['dsc', 'img', 'mov'], 3, 699, function(vids) {
     loadVideos(vids);
   });
 }
