@@ -4,15 +4,14 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
   , app = express()
   , http = require('http')
   , server = http.createServer(app)
   , io = require('socket.io').listen(server)
-  , csv = require('csv')
-  , youtube = require('./worker/youtube');
+  , videoStream = require('./videoStream.js');
 
-// Configuration
+
+/* --------- CONFIG ------------ */
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -28,113 +27,37 @@ app.configure('development', function(){
 });
 
 app.configure('production', function(){
-  app.use(express.errorHandler()); 
+  app.use(express.errorHandler());
 });
 
-var VIDEO_INTERVAL = 5000;
-var videos = [];
-var index = 0;
-var DATA_FILE = __dirname + '/data.txt';
-var intervalId = 0;
-var currentVid = {};
-var lastRefresh = new Date();
 
-/* 
-  fisher-yates shuffle algorithm taken from
-  http://sedition.com/perl/javascript-fy.html
-*/
-Array.prototype.shuffle = function() {
-  var i = this.length;
-  if ( i == 0 ) return;
-  while ( --i ) {
-     var j = Math.floor( Math.random() * ( i + 1 ) );
-     var tempi = this[i];
-     var tempj = this[j];
-     this[i] = tempj;
-     this[j] = tempi;
-   }
-   return this;
-}
+/* ---------- REAL-TIME ---------- */
 
-function sendVideo() {
-  if (index >= videos.length) {
-    index = 0;
-    return;
-  }
-  var vid = videos[index++];
-  var now = (new Date())/1000;
-  var data = {vid:vid, time:now};
-  currentVid = data;
-  io.sockets.emit('vid', data);
-
-  //shuffle array if at the end of the list
-  if (index == videos.length) {
-    videos.shuffle();
-    index = 0;
-  }
-}
-
-function readVideos() {
-  csv()
-  .from.path(DATA_FILE)
-  .transform(function(data){
-      data.unshift(data.pop());
-      return data;
-  })
-  .on('record',function(data, index){
-      videos.push(data[0]);
-  })
-  .on('end',function(count){
-      console.log('Read in', count, 'videos.');
-      intervalId = setInterval(sendVideo, VIDEO_INTERVAL);
-  })
-  .on('error',function(error){
-      console.log(error.message);
-  });
-}
-
-function getFreshVideos() {
-  youtube.getVids(['dsc', 'img', 'mov'], 3, 454, function(vids) {
-    clearInterval(intervalId);
-    videos = vids.shuffle();
-    index = 0;
-    intervalId = setInterval(sendVideo, VIDEO_INTERVAL);
-    lastRefresh = new Date();
-  });
-}
-
-// Real-time
 io.sockets.on('connection', function(socket) {
-    socket.emit('vid', currentVid);
-    socket.on("disconnect", function() {
-
-    });
+    socket.emit('vid', videoStream.currentVid());
+    socket.on("disconnect", function() {});
 });
 
-// Routes
+
+/* ---------- ROUTES ------------ */
 
 app.get('/',  function(req, res){
   res.sendfile(__dirname + '/views/index.html');
-});
-
-app.get('/test/',  function(req, res){
-  res.sendfile(__dirname + '/views/smooth.html');
 });
 
 app.get('/z/', function(req, res) {
   res.render('admin', {
     layout: 'layout.jade',
     title: 'Admin',
-    numVideos: videos.length,
+    numVideos: videoStream.numVideos(),
     numConnections: io.sockets.clients().length,
-    lastRefresh: lastRefresh
+    lastRefresh: videoStream.lastRefresh()
   });
 });
 
 server.listen(process.env['app_port'] || 3000);
 console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
-readVideos();
 
-getFreshVideos();
-//refresh everyday
-setInterval(getFreshVideos, 86400000);
+videoStream.start(function(data) {
+  io.sockets.emit('vid', data);
+});

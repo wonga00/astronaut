@@ -60,12 +60,12 @@ function getVids(tags, startIndex, endIndex, vidCallback) {
   //worker for the queue of queries
   function work() {
     var params = queries.pop();
-    console.log('search for: ', params['q']);
+    //console.log('search for: ', params['q']);
     var startIndex = params['start-index'];
     var thePath = path + querystring.stringify(params);
-    console.log(thePath);
+    //console.log(thePath);
     http.get({host: host, port: 80, path: thePath}, function(res) {
-      console.log("Got response: " + res.statusCode);
+      //console.log("Got response: " + res.statusCode);
         var data = "";
         res.on('data', function (chunk) {
           data += chunk;
@@ -74,7 +74,7 @@ function getVids(tags, startIndex, endIndex, vidCallback) {
           var obj = JSON.parse(data);
           var parsedVids = parseVids(obj);
           if (parsedVids.length > 0) {
-            console.log('retrieved', parsedVids.length, 'vids');
+            //console.log('retrieved', parsedVids.length, 'vids');
             vids = vids.concat(parsedVids);
             //enqueue a new request
             params["start-index"] = startIndex + parsedVids.length;

@@ -42,6 +42,7 @@ var SmoothPlayer = {
     muted : false,
     ready : false,
     holdState : false,
+    firstVideo : true,
     //dictionary of video ids : player id <-> video id
     vids : {},
 
@@ -53,7 +54,7 @@ var SmoothPlayer = {
     back : undefined,
     buffering : undefined,
 
-    init : function(divname, width, height, readyCb, resumeCb, soundurl) {
+    init : function(divname, width, height, readyCb, resumeCb, startCb, soundurl) {
         this.soundurl = soundurl;
         if (width) {
             this.width = width;
@@ -63,6 +64,7 @@ var SmoothPlayer = {
         }
         this.readycb = readyCb;
         this.onresume = resumeCb;
+        this.onstart = startCb;
         var frame = document.getElementById(divname);
         frame.innerHTML = "<div id =\"smoothplay_1\"></div><div id=\"smoothplay_2\"></div><div id=\"smoothplay_3\"></div><div id=\"soundplayer\"></div>";
         this.createPlayer("smoothplay_1","p1", this.width, this.height);
@@ -71,7 +73,7 @@ var SmoothPlayer = {
     },
 
     createPlayer : function(divName, playerName, width, height) {
-        var params = { allowScriptAccess: "always" };
+        var params = { allowScriptAccess: "always", wmode: "transparent"};
         var atts = { id: playerName}
         //chrome-less version
         swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid="+playerName,
@@ -148,6 +150,13 @@ var SmoothPlayer = {
     },
 
     onReady : function() {
+        if (this.firstVideo) {
+            if (this.onstart) {
+                this.onstart();
+            }
+            this.firstVideo = false;
+        }
+
         if (this.visible == this.current) {
             //we are looking at the live screen we need to switch unless we are holding
             if (!this.holdState) {
@@ -194,7 +203,7 @@ var SmoothPlayer = {
         if (this.playCallback) {
             this.playCallback();
         }
-        console.log("onReady");
+
         this.printPlayers();
 
     },
