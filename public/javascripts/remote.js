@@ -194,14 +194,6 @@ function livePressed() {
 function onExit() {
 }
 
-function IdHandler(title,id,startTime) {
-	if (currentId!=id) {
-		var currentTime = (new Date())/1000;
-    	SmoothPlayer.play(id, currentTime-startTime);
-    	currentId=id;
-	}
-}
-
 function initSocket() {
     var socket = io.connect();
     //establish a command pattern on the server to parse out messages
@@ -214,7 +206,8 @@ function initSocket() {
 function processVid(vid, time) {
     if (currentId!=vid) {
         var currentTime = (new Date())/1000;
-        SmoothPlayer.play(vid, currentTime-time);
+        var seekTime = (currentTime < time) ? 0 : (currentTime - time);
+        SmoothPlayer.play(vid, seekTime);
         currentId=vid;
     }
 }
@@ -224,5 +217,7 @@ function OnResume() {
 }
 
 function OnStart() {
-  $('#smooth').animate({opacity:1},3000);
+  $('#smooth').animate({opacity:1}, 2000, function() {
+    $("#smooth-container").css({"background-color": "#000"});
+  });
 }
