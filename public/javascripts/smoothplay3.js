@@ -9,7 +9,7 @@
     ex. SmoothPlayer.init(smoothdiv, WIDTH, HEIGHT, readyCb);
 
     init(div:String, width:Number, height:Number, [ready()]):Void
-        
+
     to play a video, call
     play(videoId:String):Boolean
         returns false if player is not ready to receive (see readyCb), otherwise true
@@ -29,9 +29,6 @@
         returns the video id being played in the 'back' player
     currentVid():String
         returns the video id being played in the 'current' player
-
-
-    todo: push more free functions into SmoothPlayer package
 */
 
 
@@ -96,7 +93,7 @@ var SmoothPlayer = {
 
     setHidden : function(player) {
         player.width = 1;
-        player.height = 1;
+        player.height = 0;
         player.className = "";
         player.mute();
     },
@@ -156,7 +153,7 @@ var SmoothPlayer = {
                 this.setVisible(this.buffering);
                 this.setHidden(this.current);
                 this.current.pauseVideo();
-                
+
                 //current <-> buffering
                 var tmp = this.buffering;
                 this.buffering = this.current;
@@ -207,8 +204,12 @@ var SmoothPlayer = {
         }
 
     },
-    
+
     printPlayers : function() {
+        function playerToString(player) {
+            return player.id + " " + player.width;
+        }
+
         console.log("vis:\t" + playerToString(this.visible));
         console.log("cur:\t" + playerToString(this.current));
         console.log("buf:\t" + playerToString(this.buffering));
@@ -238,7 +239,7 @@ var SmoothPlayer = {
             //alert("goBack: impossible state!");
         }
     },
-    
+
     resume : function() {
         this.holdState = false;
         if (this.visible == this.current) {
@@ -273,15 +274,8 @@ var SmoothPlayer = {
 }
 
 /*
-    debug utilities
+    YouTube functions
 */
-
-function playerToString(player) {
-    return player.id + " " + player.width;
-}
-
-//use these as references to the original players
-var p1, p2, p3;
 
 var ytStates = {
     '-1':'unstarted',
@@ -293,9 +287,9 @@ var ytStates = {
     };
 
 var ytErrors = {
-    '2':'invalid vid', 
-    '100':'video not found', 
-    '101':'embedded not allowed', 
+    '2':'invalid vid',
+    '100':'video not found',
+    '101':'embedded not allowed',
     '150':'embedded not allowed'
     };
 
@@ -303,25 +297,14 @@ function onYouTubePlayerReady(playerId) {
     SmoothPlayer.count += 1;
 
     var player = document.getElementById(playerId);
-
-    if (playerId == "p1") {
-        player.addEventListener("onStateChange", "onStateChange1");
-        player.addEventListener("onError","onError1");
-    }
-    else if (playerId == "p2") {
-        player.addEventListener("onStateChange", "onStateChange2");
-        player.addEventListener("onError","onError2");
-    }
-    else {
-        player.addEventListener("onStateChange", "onStateChange3");
-        player.addEventListener("onError","onError3");
-    }
+    player.addEventListener("onStateChange", "onStateChange_"+ playerId);
+    player.addEventListener("onError","onError_"+ playerId);
 
     if (SmoothPlayer.count == 3) {
         //init the states -- should be the last time we use these ids directly
-        p1 = SmoothPlayer.current = document.getElementById("p1");
-        p2 = SmoothPlayer.buffering = document.getElementById("p2");
-        p3 = SmoothPlayer.back = document.getElementById("p3");
+        SmoothPlayer.current = document.getElementById("p1");
+        SmoothPlayer.buffering = document.getElementById("p2");
+        SmoothPlayer.back = document.getElementById("p3");
         SmoothPlayer.visible = SmoothPlayer.current;
 
         //hide and show
@@ -338,47 +321,48 @@ function onYouTubePlayerReady(playerId) {
     }
 }
 
-function stateHelper(player, state) {
+function ytStateHelper(player, state) {
+    state = ytStates[state];
     if (SmoothPlayer.buffering == player) {
         //console.log(player.id + " state change: " + ytStates[state]);
-        if (state == 1) {
+        if (state == 'playing') {
             SmoothPlayer.onReady();
         }
     }
     if (SmoothPlayer.visible == player) {
         //console.log(player.id + " state change: " + ytStates[state]);
-        if (state == 0 && (SmoothPlayer.holdState || player == SmoothPlayer.back)) {
+        if (state == 'ended' && (SmoothPlayer.holdState || player == SmoothPlayer.back)) {
             SmoothPlayer.resume();
             if (SmoothPlayer.onresume) {
                 SmoothPlayer.onresume();
             }
         }
-        if (state == 5) { //this happens if someone presses the YouTube logo and gets redirected
+        if (state == 'cued') { //this happens if someone presses the YouTube logo and gets redirected
             player.playVideo();
         }
     }
 }
 
-function onStateChange1(state) {
-    stateHelper(p1, state);
+function onStateChange_p1(state) {
+    ytStateHelper(document.getElementById("p1"), state);
 }
 
-function onStateChange2(state) {
-    stateHelper(p2, state);
+function onStateChange_p2(state) {
+    ytStateHelper(document.getElementById("p2"), state);
 }
 
-function onStateChange3(state) {
-    stateHelper(p3, state);
+function onStateChange_p3(state) {
+    ytStateHelper(document.getElementById("p3"), state);
 }
 
-function onError1(error) {
+function onError_p1(error) {
     console.log("Error on p1: " + ytErrors[error]);
 }
 
-function onError2(error) {
+function onError_p2(error) {
     console.log("Error on p2: " + ytErrors[error]);
 }
 
-function onError3(error) {
+function onError_p3(error) {
     console.log("Error on p3: " + ytErrors[error]);
 }
