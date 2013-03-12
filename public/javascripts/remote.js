@@ -43,7 +43,13 @@ $(document).ready(function() {
     placement:'bottom'
   });
 
-	SmoothPlayer.init("smooth",960,540, initSocket, OnResume, OnStart);
+  if (config.sharedVid) {
+    console.log("Received shared vid");
+    SmoothPlayer.init("smooth",960,540, playSharedVid, OnResume, OnStart);
+  } else {
+    SmoothPlayer.init("smooth",960,540, initSocket, OnResume, OnStart);
+  }
+
 
 	//initialize buttons to the default state
 	livePressed();
@@ -145,6 +151,7 @@ function mutePressed() {
 
 function holdPressed() {
 	if (hold) {
+    console.log("holding");
 		SmoothPlayer.hold();
     $("#back").attr("class","control-button hold-pressed");
     $("#hold").attr("class","control-button inactive pressed");
@@ -203,6 +210,10 @@ function initSocket() {
     });
 }
 
+function playSharedVid() {
+  SmoothPlayer.play(config.sharedVid, 0);
+}
+
 function processVid(vid, time) {
     if (currentId!=vid) {
         var currentTime = (new Date())/1000;
@@ -220,4 +231,12 @@ function OnStart() {
   $('#smooth').animate({opacity:1}, 2000, function() {
     $("#smooth-container").css({"background-color": "#000"});
   });
+
+  if (config.sharedVid) {
+    // hold the video for a shared video and then start buffering incoming
+    // videos. when the held video is done it will immediately switch to the
+    // next incoming video
+    holdPressed();
+    initSocket();
+  }
 }

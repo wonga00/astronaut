@@ -8,7 +8,9 @@
 <link rel="stylesheet/less" type="text/css" href="/stylesheets/style.less" />
 <link rel="shortcut icon" href="/favicon.ico">
 <link href='http://fonts.googleapis.com/css?family=Roboto:500,300' rel='stylesheet' type='text/css'>
-
+<script>
+  var config = {sharedVid: "<%= vidId %>", host: "<%= host %>"};
+</script>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="/javascripts/swfobject.js"></script>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
@@ -21,7 +23,6 @@
 </head>
 
 <body onbeforeunload=javascript:onExit()>
-<div id="vidid" style="display: none">{vidid}</div>
 <div id="top-section">
   <div id="smooth-container">
     <div id="smooth"></div>

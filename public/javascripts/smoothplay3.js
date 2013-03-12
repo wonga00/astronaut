@@ -150,13 +150,6 @@ var SmoothPlayer = {
     },
 
     onReady : function() {
-        if (this.firstVideo) {
-            if (this.onstart) {
-                this.onstart();
-            }
-            this.firstVideo = false;
-        }
-
         if (this.visible == this.current) {
             //we are looking at the live screen we need to switch unless we are holding
             if (!this.holdState) {
@@ -205,6 +198,13 @@ var SmoothPlayer = {
         }
 
         this.printPlayers();
+
+        if (this.firstVideo) {
+            if (this.onstart) {
+                this.onstart();
+            }
+            this.firstVideo = false;
+        }
 
     },
     
