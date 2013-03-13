@@ -87,7 +87,7 @@ $(document).ready(function() {
         height = 400,
         left   = ($(window).width()-width)/2,
         top    = ($(window).height()-height)/2,
-        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Flocalhost%3A3000%2F&text=I%20found%20this%20video%20on%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fwww.youtube.com/watch?v='+SmoothPlayer.currentVid()+'&via=astronautdotio',
+        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Fastronaut.io%2F&text=I%20found%20this%20video%20on%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fwww.youtube.com/watch?v='+SmoothPlayer.currentVid()+'&via=astronautdotio',
         opts   = 'status=1' +
                  ',width='  + width  +
                  ',height=' + height +
@@ -104,7 +104,7 @@ $(document).ready(function() {
         height = 400,
         left   = ($(window).width()-width)/2,
         top    = ($(window).height()-height)/2,
-        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Flocalhost%3A3000%2F&text=Check%20out%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fwww.astronaut.io&via=astronautdotio',
+        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Fastronaut.io%2F&text=Check%20out%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fastronaut.io%2F&via=astronautdotio',
         opts   = 'status=1' +
                  ',width='  + width  +
                  ',height=' + height +
