@@ -120,12 +120,13 @@ $(document).ready(function() {
 	$('body').keydown(function(event) {
 		console.log(event.which);
         if (event.which == 77) { //detect 'm'
-			mutePressed();
+          mutePressed();
         }
         else if (event.which == 37) { // detect 'left'
         	backPressed();
         }
-        else if (event.which == 40) { //detect 'up'
+        else if (event.which == 40) { //detect 'down'
+          event.preventDefault();
         	holdPressed();
         }
         else if (event.which == 39) { //detect 'right'
@@ -184,7 +185,9 @@ function backPressed() {
 
 function livePressed() {
 	if (live) {
-		SmoothPlayer.resume();
+    if (SmoothPlayer.ready) {
+		  SmoothPlayer.resume();
+    }
     $("#back").attr("class","control-button");
     $("#hold").attr("class","control-button live-pressed");
     $("#live").attr("class","control-button inactive pressed");
