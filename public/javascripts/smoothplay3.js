@@ -43,15 +43,50 @@ var SmoothPlayer = {
     //dictionary of video ids : player id <-> video id
     vids : {},
 
-    //the id of the currently visible state
-    visible : undefined,
-
     //possible players
-    current : undefined,
-    back : undefined,
-    buffering : undefined,
+    current : undefined, //should always be playing
+    back : undefined, //should be paused
+    buffering : undefined, //should be loading -- when starting play it turns into current
 
-    init : function(divname, width, height, readyCb, resumeCb, startCb, soundurl) {
+    /*
+
+    States
+
+    holding and going back do the same thing in terms of what happens to the other two players
+
+    players A, B, C
+    if B is Held it is Live until a new video arrives.
+    Live -> Back (is visible and playing)
+    Buffering -> Live
+    Back -> Buffering
+
+    in the Live State
+    Live State == current is visible
+    if a new video comes
+    Live -> Back (is paused and hidden)
+    Buffering -> Live (is visible and playing)
+    Back -> Buffering (is loading and hidden)
+
+    if a video comes when the user is in the back state
+    Live -> Buffering
+    Buffering -> Live
+
+    if user goes back:
+    back becomes visible and resumes
+    live becomes invisible but still playing
+    buffering continues to buffer
+
+    if the viewer goes Back they should see the last video that was Live
+    if the player goes back to C, A and B take turns being the live video
+
+    you can only transition from a Live -> Back, Live -> Held
+    Back -> Live
+    Hold -> Live
+
+    */
+
+
+    init : function(divname, width, height, onReady, onResume, onStart, soundurl) {
         this.soundurl = soundurl;
         if (width) {
             this.width = width;
@@ -59,11 +94,11 @@ var SmoothPlayer = {
         if (height) {
             this.height = height;
         }
-        this.readycb = readyCb;
-        this.onresume = resumeCb;
-        this.onstart = startCb;
-        var frame = document.getElementById(divname);
-        frame.innerHTML = "<div id =\"smoothplay_1\"></div><div id=\"smoothplay_2\"></div><div id=\"smoothplay_3\"></div><div id=\"soundplayer\"></div>";
+        this.onReady = onReady;
+        this.onResume = onResume;
+        this.onStart = onStart;
+
+        document.getElementById(divname).innerHTML = "<div id =\"smoothplay_1\"></div><div id=\"smoothplay_2\"></div><div id=\"smoothplay_3\"></div><div id=\"soundplayer\"></div>";
         this.createPlayer("smoothplay_1","p1", this.width, this.height);
         this.createPlayer("smoothplay_2","p2", 1, 1);
         this.createPlayer("smoothplay_3","p3", 1, 1);
@@ -81,6 +116,9 @@ var SmoothPlayer = {
     },
 
     setVisible : function(player) {
+        if (player.visible == true) {
+            return;
+        }
         player.height = this.height;
         player.width = this.width;
         player.className = "playing";
@@ -89,18 +127,23 @@ var SmoothPlayer = {
         } else {
             player.unMute();
         }
+        player.visible = true;
+        player.playVideo();
     },
 
     setHidden : function(player) {
+        if (player.visible == false) {
+            return;
+        }
         player.width = 1;
         player.height = 0;
         player.className = "";
         player.mute();
+        player.visible = false;
     },
 
     playSound : function( url ){
         if (url) {
-            console.log("playing sound" + url);
             document.getElementById("soundplayer").innerHTML="<embed src='"+url+"' hidden=true autostart=true loop=false>";
         }
     },
@@ -123,7 +166,7 @@ var SmoothPlayer = {
         return true;
     },
 
-    //mutes the player 
+    //mutes the player
     mute : function() {
         if (!this.ready) {
             return;
@@ -141,64 +184,59 @@ var SmoothPlayer = {
         if (!this.ready) {
             return;
         }
-        this.visible.unMute();
+
+        if (this.current.visible) {
+            this.current.unMute();
+        } else if (this.back.visible) {
+            this.back.unMute();
+        }
 
         this.muted = false;
     },
 
-    onReady : function() {
-        if (this.visible == this.current) {
+    swap : function(a, b) {
+        var tmp = this[b];
+        this[b] = this[a];
+        this[a] = tmp;
+    },
+
+    //this is called when a video is done buffering and ready to be played
+    performStateTransition : function() {
+        if (this.current.visible) {
             //we are looking at the live screen we need to switch unless we are holding
             if (!this.holdState) {
-                this.setVisible(this.buffering);
-                this.setHidden(this.current);
-                this.current.pauseVideo();
+                // adjust the names of the players to reflect their states
+                this.swap('current', 'buffering');
+                this.swap('buffering', 'back');
 
-                //current <-> buffering
-                var tmp = this.buffering;
-                this.buffering = this.current;
-                this.current = tmp;
-                this.visible = this.current;
+                this.setHidden(this.back);
+                this.setHidden(this.buffering);
+                this.back.pauseVideo();
+                this.setVisible(this.current);
 
-                //buffering <-> back
-                tmp = this.back;
-                this.back = this.buffering;
-                this.buffering = tmp;
             } else {
                 //we should put the video in the back state
-                //current <--> back
-                var tmp = this.back;
-                this.back = this.current;
-                this.current = tmp;
-                this.visible = this.back;
+                this.swap('current', 'buffering');
+                this.swap('buffering', 'back');
                 this.setVisible(this.back);
                 this.setHidden(this.current);
-
-                //current <--> buffering
-                tmp = this.buffering;
-                this.buffering = this.current;
-                this.current = tmp;
             }
-        } else if (this.visible == this.back) { //we are in a back state, we should swap out the others
-            //current <-> buffering
-            var tmp = this.buffering;
-            this.buffering = this.current;
-            this.current = tmp;
-
+        } else if (this.back.visible) { 
+            //we are in a back state, we should swap out the others
+            this.swap('current', 'buffering');
+            this.setHidden(this.buffering);
+            this.setHidden(this.current);
             this.buffering.pauseVideo();
         } else {
             //we should never hit this
-            alert("Looking at the buffering screen!");
-        }
-        if (this.playCallback) {
-            this.playCallback();
+            //alert("Looking at the buffering screen!");
         }
 
         this.printPlayers();
 
         if (this.firstVideo) {
-            if (this.onstart) {
-                this.onstart();
+            if (this.onStart) {
+                this.onStart();
             }
             this.firstVideo = false;
         }
@@ -207,17 +245,16 @@ var SmoothPlayer = {
 
     printPlayers : function() {
         function playerToString(player) {
-            return player.id + " " + player.width;
+            return player.id + "\t" + player.width + "\tvisible:" + player.visible;
         }
 
-        console.log("vis:\t" + playerToString(this.visible));
         console.log("cur:\t" + playerToString(this.current));
         console.log("buf:\t" + playerToString(this.buffering));
         console.log("back:\t" + playerToString(this.back));
     },
 
     hold : function() {
-        if (this.visible != this.current) {
+        if (!this.current.visible) {
             //alert("trying to hold when not viewing current state!");
             return;
         }
@@ -225,14 +262,13 @@ var SmoothPlayer = {
     },
 
     goBack : function() {
-        if (this.visible == this.back) {
+        if (this.back.visible) {
             return;
         }
-        if (this.visible == this.current) {
+        if (this.current.visible) {
             this.setVisible(this.back);
-            this.back.playVideo();
             this.setHidden(this.current);
-            this.visible = this.back;
+            this.setHidden(this.buffering);
             this.printPlayers();
         }
         else {
@@ -242,15 +278,14 @@ var SmoothPlayer = {
 
     resume : function() {
         this.holdState = false;
-        if (this.visible == this.current) {
+        if (this.current.visible) {
             return;
         }
-        if (this.visible == this.back) {
+        if (this.back.visible) {
             this.setVisible(this.current);
-            //this.current.playVideo();
             this.setHidden(this.back)
+            this.setHidden(this.buffering);
             this.back.pauseVideo();
-            this.visible = this.current;
         }
         else {
             //alert("impossible state!");
@@ -297,15 +332,14 @@ function onYouTubePlayerReady(playerId) {
     SmoothPlayer.count += 1;
 
     var player = document.getElementById(playerId);
-    player.addEventListener("onStateChange", "onStateChange_"+ playerId);
-    player.addEventListener("onError","onError_"+ playerId);
+    player.addEventListener("onStateChange", "onStateChange_" + playerId);
+    player.addEventListener("onError", "onError_" + playerId);
 
     if (SmoothPlayer.count == 3) {
         //init the states -- should be the last time we use these ids directly
         SmoothPlayer.current = document.getElementById("p1");
         SmoothPlayer.buffering = document.getElementById("p2");
         SmoothPlayer.back = document.getElementById("p3");
-        SmoothPlayer.visible = SmoothPlayer.current;
 
         //hide and show
         SmoothPlayer.setVisible(SmoothPlayer.current);
@@ -315,8 +349,8 @@ function onYouTubePlayerReady(playerId) {
         SmoothPlayer.ready = true;
         //console.log("SmoothPlayer ready");
         SmoothPlayer.printPlayers();
-        if (SmoothPlayer.readycb) {
-            SmoothPlayer.readycb();
+        if (SmoothPlayer.onReady) {
+            SmoothPlayer.onReady();
         }
     }
 }
@@ -326,15 +360,15 @@ function ytStateHelper(player, state) {
     if (SmoothPlayer.buffering == player) {
         //console.log(player.id + " state change: " + ytStates[state]);
         if (state == 'playing') {
-            SmoothPlayer.onReady();
+            SmoothPlayer.performStateTransition();
         }
     }
-    if (SmoothPlayer.visible == player) {
+    if (player.visible) {
         //console.log(player.id + " state change: " + ytStates[state]);
         if (state == 'ended' && (SmoothPlayer.holdState || player == SmoothPlayer.back)) {
             SmoothPlayer.resume();
-            if (SmoothPlayer.onresume) {
-                SmoothPlayer.onresume();
+            if (SmoothPlayer.onResume) {
+                SmoothPlayer.onResume();
             }
         }
         if (state == 'cued') { //this happens if someone presses the YouTube logo and gets redirected
