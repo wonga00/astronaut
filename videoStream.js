@@ -21,7 +21,7 @@ var REFRESH_INTERVAL = 86400000 //one day
 
 var adIndex = 0;
 // these are the interstitual videos
-var ads = ["Ip2ZGND1I9Q", "rj18UQjPpGA"];
+var ads = ["Ip2ZGND1I9Q"];
 var lastAdTime = new Date();
 var AD_INTERVAL = 20000; //time in between ads in milliseconds
 
@@ -64,9 +64,21 @@ function getNextVid() {
 }
 
 function sendVideo() {
-  var vid = shouldSendAd() ? getNextAd() : getNextVid();
-  var now = (new Date())/1000;
-  var data = {vid:vid, time:now};
+  var vid, offset;
+  if (shouldSendAd()) {
+    vid = getNextAd();
+    offset = 10 + Math.floor( Math.random() * 40 );
+  } else {
+    vid = getNextVid();
+    offset = 0;
+  }
+
+  var data = {
+    vid: vid,
+    time: (new Date())/1000,
+    offset: offset
+  };
+
   currentVid = data;
 
   if (videoCallback) {

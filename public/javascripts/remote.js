@@ -209,7 +209,7 @@ function initSocket() {
     //establish a command pattern on the server to parse out messages
     socket.on('vid', function(data) {
         console.log(data);
-        processVid(data.vid, data.time);
+        processVid(data);
     });
 }
 
@@ -217,12 +217,13 @@ function playSharedVid() {
   SmoothPlayer.play(config.sharedVid, 0);
 }
 
-function processVid(vid, time) {
-    if (currentId!=vid) {
+function processVid(data) {
+    if (currentId!=data.vid) {
         var currentTime = (new Date())/1000;
-        var seekTime = (currentTime < time) ? 0 : (currentTime - time);
-        SmoothPlayer.play(vid, seekTime);
-        currentId=vid;
+        var seekTime = (currentTime < data.time) ? 0 : (currentTime - data.time);
+        seekTime += data.offset;
+        SmoothPlayer.play(data.vid, seekTime);
+        currentId=data.vid;
     }
 }
 
