@@ -23,7 +23,7 @@ var adIndex = 0;
 // these are the interstitual videos
 var ads = ["Ip2ZGND1I9Q"];
 var lastAdTime = new Date();
-var AD_INTERVAL = 20000; //time in between ads in milliseconds
+var AD_INTERVAL = 60000 * 3; //time in between ads in milliseconds
 
 /* 
   fisher-yates shuffle algorithm taken from

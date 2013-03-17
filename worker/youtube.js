@@ -52,7 +52,7 @@ function getVids(tags, startIndex, endIndex, vidCallback) {
           time: 'this_week',
           "start-index": 1
         };
-        params['q'] = tag + pad(j, 4);
+        params['q'] = "\"" + tag + " " + pad(j, 4) + "\"";
         queries.push(params);
     }
   }
