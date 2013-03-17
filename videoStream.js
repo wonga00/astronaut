@@ -19,6 +19,11 @@ var lastRefresh;
 var videoCallback;
 var REFRESH_INTERVAL = 86400000 //one day
 
+var adIndex = 0;
+// these are the interstitual videos
+var ads = ["Ip2ZGND1I9Q", "rj18UQjPpGA"];
+var lastAdTime = new Date();
+var AD_INTERVAL = 20000; //time in between ads in milliseconds
 
 /* 
   fisher-yates shuffle algorithm taken from
@@ -38,24 +43,34 @@ Array.prototype.shuffle = function() {
    return this;
 }
 
-function sendVideo() {
-  if (index >= videos.length) {
+function shouldSendAd() {
+  var now = new Date();
+  return  (now - lastAdTime) > AD_INTERVAL;
+}
+
+function getNextAd() {
+  var vid = ads[adIndex];
+  adIndex = (adIndex + 1) % ads.length;
+  lastAdTime = new Date();
+  return vid;
+}
+
+function getNextVid() {
+  if (index == videos.length) {
+    videos.shuffle();
     index = 0;
-    return;
   }
-  var vid = videos[index++];
+  return videos[index++];
+}
+
+function sendVideo() {
+  var vid = shouldSendAd() ? getNextAd() : getNextVid();
   var now = (new Date())/1000;
   var data = {vid:vid, time:now};
   currentVid = data;
 
   if (videoCallback) {
       videoCallback(currentVid);
-  }
-
-  //shuffle array if at the end of the list
-  if (index == videos.length) {
-    videos.shuffle();
-    index = 0;
   }
 }
 
