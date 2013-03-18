@@ -105,7 +105,7 @@ var SmoothPlayer = {
     },
 
     createPlayer : function(divName, playerName, width, height) {
-        var params = { allowScriptAccess: "always", wmode: "transparent"};
+        var params = { allowScriptAccess: "always" };
         var atts = { id: playerName}
         //chrome-less version
         swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid="+playerName,
@@ -332,8 +332,16 @@ function onYouTubePlayerReady(playerId) {
     SmoothPlayer.count += 1;
 
     var player = document.getElementById(playerId);
-    player.addEventListener("onStateChange", "onStateChange_" + playerId);
-    player.addEventListener("onError", "onError_" + playerId);
+
+    //we have to make these callbacks global because swfobjects need functions
+    //to be passed by string
+    var stateFn = "ytOnStateChange_" + playerId;
+    window[stateFn] = function(state) {ytStateHelper(player, state);};
+    var errorFn = "ytOnError_" + playerId;
+    window[errorFn] = function(error) {console.log("Error on p1: " + ytErrors[error]);};
+
+    player.addEventListener("onStateChange", stateFn);
+    player.addEventListener("onError", errorFn);
 
     if (SmoothPlayer.count == 3) {
         //init the states -- should be the last time we use these ids directly
@@ -375,28 +383,4 @@ function ytStateHelper(player, state) {
             player.playVideo();
         }
     }
-}
-
-function onStateChange_p1(state) {
-    ytStateHelper(document.getElementById("p1"), state);
-}
-
-function onStateChange_p2(state) {
-    ytStateHelper(document.getElementById("p2"), state);
-}
-
-function onStateChange_p3(state) {
-    ytStateHelper(document.getElementById("p3"), state);
-}
-
-function onError_p1(error) {
-    console.log("Error on p1: " + ytErrors[error]);
-}
-
-function onError_p2(error) {
-    console.log("Error on p2: " + ytErrors[error]);
-}
-
-function onError_p3(error) {
-    console.log("Error on p3: " + ytErrors[error]);
 }
