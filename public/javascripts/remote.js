@@ -72,7 +72,6 @@ $(document).ready(function() {
 	});
 	$("#hold").click(function() {
 		holdPressed();
-		var currid = SmoothPlayer.currentVid();
 	});
 	$("#live").click(function() {
 		livePressed();
@@ -87,7 +86,7 @@ $(document).ready(function() {
         height = 400,
         left   = ($(window).width()-width)/2,
         top    = ($(window).height()-height)/2,
-        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Fastronaut.io%2F&text=I%20found%20this%20video%20on%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fastronaut.io/v/'+SmoothPlayer.currentVid()+'&via=astronautdotio',
+        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Fastronaut.io%2F&text=I%20found%20this%20video%20on%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fastronaut.io/v/'+SmoothPlayer.visibleVid()+'&via=astronautdotio',
         opts   = 'status=1' +
                  ',width='  + width  +
                  ',height=' + height +

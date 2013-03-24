@@ -45,7 +45,7 @@ var SmoothPlayer = {
 
     //possible players
     current : undefined, //should always be playing
-    back : undefined, //should be paused
+    back : undefined, //can be paused or playing if in 'hold state' and a new video comes
     buffering : undefined, //should be loading -- when starting play it turns into current
 
     /*
@@ -105,7 +105,7 @@ var SmoothPlayer = {
     },
 
     createPlayer : function(divName, playerName, width, height) {
-        var params = { allowScriptAccess: "always" };
+        var params = { allowScriptAccess: "always", wmode: "transparent"};
         var atts = { id: playerName}
         //chrome-less version
         swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid="+playerName,
@@ -305,6 +305,19 @@ var SmoothPlayer = {
             return '';
         }
         return this.vids[this.current.id];
+    },
+
+    visibleVid : function() {
+        if (!this.ready) {
+            return '';
+        }
+        if (this.back.visible) {
+            return this.vids[this.back.id];
+        }
+        if (this.current.visible) {
+            return this.vids[this.current.id];
+        }
+        return '';
     }
 }
 
