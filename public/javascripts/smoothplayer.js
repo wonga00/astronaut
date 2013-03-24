@@ -151,7 +151,7 @@ var SmoothPlayer = {
     //this will queue up the next video and then toggle once it is buffered
     //vidID:String
     play : function(vidID, seekTime) {
-        //determine the player to use as a buffer 
+        //determine the player to use as a buffer
         if (!this.ready) {
             return false;
         }
@@ -221,7 +221,7 @@ var SmoothPlayer = {
                 this.setVisible(this.back);
                 this.setHidden(this.current);
             }
-        } else if (this.back.visible) { 
+        } else if (this.back.visible) {
             //we are in a back state, we should swap out the others
             this.swap('current', 'buffering');
             this.setHidden(this.buffering);
@@ -335,9 +335,9 @@ function onYouTubePlayerReady(playerId) {
 
     //we have to make these callbacks global because swfobjects need functions
     //to be passed by string
-    var stateFn = "ytOnStateChange_" + playerId;
+    var stateFn = "ytOnStateChange" + playerId;
     window[stateFn] = function(state) {ytStateHelper(player, state);};
-    var errorFn = "ytOnError_" + playerId;
+    var errorFn = "ytOnError" + playerId;
     window[errorFn] = function(error) {console.log("Error on p1: " + ytErrors[error]);};
 
     player.addEventListener("onStateChange", stateFn);
