@@ -43,7 +43,13 @@ $(document).ready(function() {
     placement:'bottom'
   });
 
-	SmoothPlayer.init("smooth",960,540, initSocket, OnResume, OnStart);
+  if (config.sharedVid) {
+    console.log("Received shared vid");
+    SmoothPlayer.init("smooth",960,540, playSharedVid, OnResume, OnStart);
+  } else {
+    SmoothPlayer.init("smooth",960,540, initSocket, OnResume, OnStart);
+  }
+
 
 	//initialize buttons to the default state
 	livePressed();
@@ -66,7 +72,6 @@ $(document).ready(function() {
 	});
 	$("#hold").click(function() {
 		holdPressed();
-		var currid = SmoothPlayer.currentVid();
 	});
 	$("#live").click(function() {
 		livePressed();
@@ -81,7 +86,7 @@ $(document).ready(function() {
         height = 400,
         left   = ($(window).width()-width)/2,
         top    = ($(window).height()-height)/2,
-        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Flocalhost%3A3000%2F&text=I%20found%20this%20video%20on%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fwww.youtube.com/watch?v='+SmoothPlayer.currentVid()+'&via=astronautdotio',
+        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Fastronaut.io%2F&text=I%20found%20this%20video%20on%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fastronaut.io/v/'+SmoothPlayer.visibleVid()+'&via=astronautio',
         opts   = 'status=1' +
                  ',width='  + width  +
                  ',height=' + height +
@@ -98,7 +103,7 @@ $(document).ready(function() {
         height = 400,
         left   = ($(window).width()-width)/2,
         top    = ($(window).height()-height)/2,
-        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Flocalhost%3A3000%2F&text=Check%20out%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fwww.astronaut.io&via=astronautdotio',
+        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Fastronaut.io%2F&text=Check%20out%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fastronaut.io%2F&via=astronautio',
         opts   = 'status=1' +
                  ',width='  + width  +
                  ',height=' + height +
@@ -114,12 +119,13 @@ $(document).ready(function() {
 	$('body').keydown(function(event) {
 		console.log(event.which);
         if (event.which == 77) { //detect 'm'
-			mutePressed();
+          mutePressed();
         }
         else if (event.which == 37) { // detect 'left'
         	backPressed();
         }
-        else if (event.which == 40) { //detect 'up'
+        else if (event.which == 40) { //detect 'down'
+          event.preventDefault();
         	holdPressed();
         }
         else if (event.which == 39) { //detect 'right'
@@ -145,6 +151,7 @@ function mutePressed() {
 
 function holdPressed() {
 	if (hold) {
+    console.log("holding");
 		SmoothPlayer.hold();
     $("#back").attr("class","control-button hold-pressed");
     $("#hold").attr("class","control-button inactive pressed");
@@ -177,7 +184,9 @@ function backPressed() {
 
 function livePressed() {
 	if (live) {
-		SmoothPlayer.resume();
+    if (SmoothPlayer.ready) {
+		  SmoothPlayer.resume();
+    }
     $("#back").attr("class","control-button");
     $("#hold").attr("class","control-button live-pressed");
     $("#live").attr("class","control-button inactive pressed");
@@ -199,16 +208,21 @@ function initSocket() {
     //establish a command pattern on the server to parse out messages
     socket.on('vid', function(data) {
         console.log(data);
-        processVid(data.vid, data.time);
+        processVid(data);
     });
 }
 
-function processVid(vid, time) {
-    if (currentId!=vid) {
+function playSharedVid() {
+  SmoothPlayer.play(config.sharedVid, 0);
+}
+
+function processVid(data) {
+    if (currentId!=data.vid) {
         var currentTime = (new Date())/1000;
-        var seekTime = (currentTime < time) ? 0 : (currentTime - time);
-        SmoothPlayer.play(vid, seekTime);
-        currentId=vid;
+        var seekTime = (currentTime < data.time) ? 0 : (currentTime - data.time);
+        seekTime += data.offset;
+        SmoothPlayer.play(data.vid, seekTime);
+        currentId=data.vid;
     }
 }
 
@@ -220,4 +234,12 @@ function OnStart() {
   $('#smooth').animate({opacity:1}, 2000, function() {
     $("#smooth-container").css({"background-color": "#000"});
   });
+
+  if (config.sharedVid) {
+    // hold the video for a shared video and then start buffering incoming
+    // videos. when the held video is done it will immediately switch to the
+    // next incoming video
+    holdPressed();
+    initSocket();
+  }
 }

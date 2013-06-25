@@ -49,10 +49,10 @@ function getVids(tags, startIndex, endIndex, vidCallback) {
           embed: 'allowed',
           v: 2,
           alt: 'jsonc',
-          time: 'this_week',
+          time: 'this_month',
           "start-index": 1
         };
-        params['q'] = tag + pad(j, 4);
+        params['q'] = "\"" + tag + " " + pad(j, 4) + "\"";
         queries.push(params);
     }
   }

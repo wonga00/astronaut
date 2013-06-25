@@ -42,12 +42,23 @@ io.sockets.on('connection', function(socket) {
 /* ---------- ROUTES ------------ */
 
 app.get('/',  function(req, res){
-  res.sendfile(__dirname + '/views/index.html');
+  res.render('index.ejs', {
+    host: "http://astronaut.io",
+    vidId: ""
+  });
+});
+
+app.get('/v/:vidId', function(req, res) {
+  var vidId = req.params.vidId;
+  //use render here
+  res.render('index.ejs', {
+    host: "http://astronaut.io",
+    vidId: vidId
+  });
 });
 
 app.get('/z/', function(req, res) {
   res.render('admin', {
-    layout: 'layout.jade',
     title: 'Admin',
     numVideos: videoStream.numVideos(),
     numConnections: io.sockets.clients().length,
