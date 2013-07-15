@@ -115,7 +115,7 @@ var SmoothPlayer = {
             divName, width, height, "8", null, null, params, atts);*/
     },
 
-    setVisible : function(player) {
+    setVisible : function(player, play) {
         if (player.visible == true) {
             return;
         }
@@ -128,7 +128,10 @@ var SmoothPlayer = {
             player.unMute();
         }
         player.visible = true;
-        player.playVideo();
+        if (play || play == 'undefined') {
+            player.playVideo();
+        }
+
     },
 
     setHidden : function(player) {
@@ -351,7 +354,7 @@ function onYouTubePlayerReady(playerId) {
     var stateFn = "ytOnStateChange" + playerId;
     window[stateFn] = function(state) {ytStateHelper(player, state);};
     var errorFn = "ytOnError" + playerId;
-    window[errorFn] = function(error) {console.log("Error on p1: " + ytErrors[error]);};
+    window[errorFn] = function(error) {console.log("Error on " + playerId + ": " + ytErrors[error]);};
 
     player.addEventListener("onStateChange", stateFn);
     player.addEventListener("onError", errorFn);
@@ -363,7 +366,7 @@ function onYouTubePlayerReady(playerId) {
         SmoothPlayer.back = document.getElementById("p3");
 
         //hide and show
-        SmoothPlayer.setVisible(SmoothPlayer.current);
+        SmoothPlayer.setVisible(SmoothPlayer.current, false);
         SmoothPlayer.setHidden(SmoothPlayer.buffering);
         SmoothPlayer.setHidden(SmoothPlayer.back);
 
