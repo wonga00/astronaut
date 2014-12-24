@@ -25,13 +25,23 @@ function parseVids(obj) {
       }).map(function(item) {
         return item['id']
       });
-    } 
+    }
   }
   return [];
 }
 
-// tags is an array of number prefixes
-// ex. dsc or img
+/*
+  retrieves youtube videos of the form
+
+    TAG 000X
+
+  ex. DSC 0001
+
+  tags: is an array of number prefixes ex. dsc, img
+  startIndex:   'DSC 0001' would be 1
+  endIndex:     'DSC 0234' would be 234
+  vidCallback:  function(vids) processes an array of vidids
+*/
 function getVids(tags, startIndex, endIndex, vidCallback) {
 
   var vids = [];
@@ -50,7 +60,7 @@ function getVids(tags, startIndex, endIndex, vidCallback) {
           v: 2,
           alt: 'jsonc',
           time: 'this_month',
-          "start-index": 1
+          start-index: 1
         };
         params['q'] = "\"" + tag + " " + pad(j, 4) + "\"";
         queries.push(params);
