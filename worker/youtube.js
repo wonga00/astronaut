@@ -60,7 +60,7 @@ function getVids(tags, startIndex, endIndex, vidCallback) {
           v: 2,
           alt: 'jsonc',
           time: 'this_month',
-          start-index: 1
+          'start-index': 1
         };
         params['q'] = "\"" + tag + " " + pad(j, 4) + "\"";
         queries.push(params);
