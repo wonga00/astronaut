@@ -23,11 +23,13 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  videoStream.setCrawlEnabled(false);
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler());
+  videoStream.setCrawlEnabled(true);
 });
 
 
@@ -67,7 +69,7 @@ app.get('/z/', function(req, res) {
 });
 
 server.listen(process.env['app_port'] || 3000);
-console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
+console.log("Astronaut server listening on port %d in %s mode", server.address().port, app.settings.env);
 
 videoStream.start(function(data) {
   io.sockets.emit('vid', data);

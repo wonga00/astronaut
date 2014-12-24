@@ -9,6 +9,7 @@
 var csv = require('csv')
   , youtube = require('./worker/youtube');
 
+var CRAWL_ENABLED = true;
 var VIDEO_INTERVAL = 5000;
 var videos = [];
 var index = 0;
@@ -115,25 +116,34 @@ function readVideos() {
 }
 
 function getFreshVideos() {
-  youtube.getVids(['dsc', 'img', 'mov'], 3, 699, function(vids) {
-    loadVideos(vids);
+  youtube.getVids({
+    tags: ['dsc', 'img', 'mov'],
+    startIndex: 3,
+    endIndex: 699,
+    vidCallback: loadVideos
   });
 }
 
 function start(video) {
     videoCallback = video;
     readVideos();
-    // getFreshVideos();
-    // setInterval(getFreshVideos, REFRESH_INTERVAL);
+    if (CRAWL_ENABLED) {
+      getFreshVideos();
+      setInterval(getFreshVideos, REFRESH_INTERVAL);
+    }
 }
 
 exports.start = start;
+
+exports.setCrawlEnabled = function(on) {
+  CRAWL_ENABLED = on;
+};
 exports.currentVid = function() {
     return currentVid;
-}
+};
 exports.lastRefresh = function() {
     return lastRefresh;
-}
+};
 exports.numVideos = function() {
     return videos.length;
-}
+};

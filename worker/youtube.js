@@ -42,7 +42,20 @@ function parseVids(obj) {
   endIndex:     'DSC 0234' would be 234
   vidCallback:  function(vids) processes an array of vidids
 */
-function getVids(tags, startIndex, endIndex, vidCallback) {
+function getVids(args) {
+
+  var tags = args.tags || [];
+  var startIndex = args.startIndex || 1;
+  var endIndex = args.endIndex || 10;
+  var maxResultsPerQuery = args.maxResultsPerQuery || -1;
+  var vidCallback = args.vidCallback;
+
+  console.log('Getting youtube vids:');
+  console.log('tags: ', tags);
+  console.log('startIndex: ', startIndex);
+  console.log('endIndex: ', endIndex);
+  console.log('maxResultsPerQuery: ', maxResultsPerQuery);
+  console.log('');
 
   var vids = [];
   var host = "gdata.youtube.com"
@@ -67,15 +80,16 @@ function getVids(tags, startIndex, endIndex, vidCallback) {
     }
   }
 
+  // console.log('QUERIES:', queries);
   //worker for the queue of queries
   function work() {
     var params = queries.pop();
-    //console.log('search for: ', params['q']);
+    console.log('search for: ', params['q']);
     var startIndex = params['start-index'];
     var thePath = path + querystring.stringify(params);
-    //console.log(thePath);
+    console.log(thePath);
     http.get({host: host, port: 80, path: thePath}, function(res) {
-      //console.log("Got response: " + res.statusCode);
+      console.log("Response Code: " + res.statusCode);
         var data = "";
         res.on('data', function (chunk) {
           data += chunk;
@@ -84,18 +98,25 @@ function getVids(tags, startIndex, endIndex, vidCallback) {
           var obj = JSON.parse(data);
           var parsedVids = parseVids(obj);
           if (parsedVids.length > 0) {
-            //console.log('retrieved', parsedVids.length, 'vids');
+            console.log('retrieved', parsedVids.length, 'vids');
             vids = vids.concat(parsedVids);
             //enqueue a new request
-            params["start-index"] = startIndex + parsedVids.length;
-            queries.push(params);
+            params['start-index'] = startIndex + parsedVids.length;
+
+            if ((params['start_index'] <= maxResultsPerQuery) ||
+                (maxResultsPerQuery == -1)) {
+
+              queries.push(params);
+            }
           }
           if (queries.length == 0) {
             vidCallback(vids);
           } else {
             setTimeout(work, REQUEST_DELAY);
           }
+          console.log('');
         });
+
     }).on('error', function(e) {
       console.log("Got error: " + e.message);
       vidCallback(vids);
