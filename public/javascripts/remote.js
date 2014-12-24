@@ -143,7 +143,7 @@ function mutePressed() {
 	}
 	else {
 		$("#mute").html("((( SOUND )))");
-		$("#mute").css({"text-decoration":"none"})
+		$("#mute").css({"text-decoration":"none"});
 		SmoothPlayer.unMute();
 		mute=0;
 	}
@@ -156,6 +156,8 @@ function holdPressed() {
     $("#back").attr("class","control-button hold-pressed");
     $("#hold").attr("class","control-button inactive pressed");
     $("#live").attr("class","control-button hold-pressed");
+    $("#control-status-live").css({"background-color":"rgba(0,0,0,0.1)"});
+    $("#control-status-message").html("Holding current video");
 		//$("#back").animate({opacity:0.5},100);
 		//$("#hold").animate({opacity:0.5},100);
 		//$("#live").animate({opacity:1.0},400);
@@ -172,6 +174,8 @@ function backPressed() {
     $("#back").attr("class","control-button inactive pressed");
     $("#hold").attr("class","control-button inactive back-pressed");
     $("#live").attr("class","control-button");
+    $("#control-status-live").css({"background-color":"rgba(0,0,0,0.1)"});
+    $("#control-status-message").html("Playing previous video");
 		//$("#back").animate({opacity:0.5},100);
 		//$("#hold").animate({opacity:0.5},100);
 		//$("#live").animate({opacity:1.0},400);
@@ -190,6 +194,8 @@ function livePressed() {
     $("#back").attr("class","control-button");
     $("#hold").attr("class","control-button live-pressed");
     $("#live").attr("class","control-button inactive pressed");
+    $("#control-status-live").css({"background-color":"red"});
+    $("#control-status-message").html("Live Stream");
 		//$("#back").animate({opacity:1.0},400);
 		//$("#hold").animate({opacity:1.0},400);
 		//$("#live").animate({opacity:0.5},100);

@@ -44,6 +44,12 @@ p {
   margin-bottom:20px;
 }
 
+.label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  font-weight: 100;
+}
+
 #top-section {
   //background: url('/images/angry.png');
   background-color:darken(@primary-accent,2%);
@@ -87,6 +93,27 @@ p {
   width:960px;
   margin-left:auto;
   margin-right:auto;
+}
+
+#control-status {
+  margin-left: 80px;
+  margin-top: 33px;
+  left: calc(50%);
+  position: absolute;
+
+  div {
+    float:left;
+    color:darken(@primary-accent,40%);
+  }
+
+  #control-status-live {
+    width:6px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: red;
+    margin-top: 4px;
+    margin-right: 6px;
+  }
 }
 
 #buttons{
