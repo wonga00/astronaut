@@ -137,13 +137,15 @@ $(document).ready(function() {
 function mutePressed() {
 	if (mute==0) {
 		$("#mute").html("SOUND");
-		$("#mute").css({"text-decoration":"line-through"})
+		$("#mute").css({"text-decoration":"line-through"});
+    $("#control-status-message").addClass("muted");
 		SmoothPlayer.mute();
 		mute=1;
 	}
 	else {
 		$("#mute").html("((( SOUND )))");
 		$("#mute").css({"text-decoration":"none"});
+    $("#control-status-message").removeClass("muted");
 		SmoothPlayer.unMute();
 		mute=0;
 	}
