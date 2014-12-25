@@ -15,7 +15,7 @@ var express = require('express')
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
+  app.set('view engine', 'ejs');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
@@ -37,7 +37,10 @@ app.configure('production', function(){
 
 io.sockets.on('connection', function(socket) {
     socket.emit('vid', videoStream.currentVid());
-    socket.on("disconnect", function() {});
+    io.sockets.emit('num_viewers', io.sockets.clients().length);
+    socket.on("disconnect", function() {
+      io.sockets.emit('num_viewers', io.sockets.clients().length - 1);
+    } );
 });
 
 
@@ -60,7 +63,7 @@ app.get('/v/:vidId', function(req, res) {
 });
 
 app.get('/z/', function(req, res) {
-  res.render('admin', {
+  res.render('admin.ejs', {
     title: 'Admin',
     numVideos: videoStream.numVideos(),
     numConnections: io.sockets.clients().length,

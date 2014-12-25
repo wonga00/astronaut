@@ -1,0 +1,22 @@
+<html>
+<head>
+<title><%= title %></title>
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+<link rel='stylesheet/less' href='/stylesheets/style.less'>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+
+<p> <%= numVideos %> videos</p>
+<p> last gathered at <%= lastRefresh %></p>
+<p> <span id="viewer-count">--</span> viewers</p>
+
+<script>
+var socket = io.connect();
+socket.on('num_viewers', function(data) {
+    $('#viewer-count').text(data);
+});
+</script>
+</body>
+</html>
