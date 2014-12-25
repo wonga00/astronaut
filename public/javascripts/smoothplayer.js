@@ -108,7 +108,7 @@ var SmoothPlayer = {
         var params = { allowScriptAccess: "always", wmode: "transparent"};
         var atts = { id: playerName}
         //chrome-less version
-        swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid="+playerName,
+        swfobject.embedSWF("http://www.youtube.com/apiplayer?version=3&enablejsapi=1&playerapiid="+playerName,
                 divName, width.toString(), height.toString(), "8", null, null, params, atts);
         //regular version
         /*swfobject.embedSWF("http://www.youtube.com/e/aNgylQeNzw8?enablejsapi=1&playerapiid="+playerName,
@@ -358,7 +358,7 @@ function onYouTubePlayerReady(playerId) {
 
     player.addEventListener("onStateChange", stateFn);
     player.addEventListener("onError", errorFn);
-
+    player.setPlaybackQuality('highres');
     if (SmoothPlayer.count == 3) {
         //init the states -- should be the last time we use these ids directly
         SmoothPlayer.current = document.getElementById("p1");
