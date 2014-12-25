@@ -8,6 +8,7 @@ var back=1;
 var hold=1;
 var live=1;
 var mute=0;
+var power=1;
 
 $(document).ready(function() {
 
@@ -35,7 +36,12 @@ $(document).ready(function() {
     container:".tooltip-container",
     placement:'bottom'
   });
-
+  $('#power-button').tooltip({
+    title:'On/Off',
+    delay:{show:100, hide:100},
+    container:".tooltip-container",
+    placement:'bottom'
+  });
   $('#share-app').tooltip({
     title:'Share Astronaut on Twitter',
     delay:{show:100, hide:100},
@@ -66,6 +72,9 @@ $(document).ready(function() {
   $('#smooth').css({opacity:0});
 
 	//this is the controller for the buttons
+  $("#power-button").click(function() {
+    powerPressed();
+  });
 	$("#back").click(function() {
 		backPressed();
 		var backid = SmoothPlayer.backVid();
@@ -133,6 +142,21 @@ $(document).ready(function() {
         }
     });
 });
+
+function powerPressed() {
+  if (power==1) {
+    $("#power-button").addClass("powered-down");
+    mutePressed();
+    //SmoothPlayer.resume();
+    power=0;
+  }
+  else {
+    $("#power-button").removeClass("powered-down");
+    mutePressed();
+    //SmoothPlayer.pause();
+    power=1;
+  }
+}
 
 function mutePressed() {
 	if (mute==0) {

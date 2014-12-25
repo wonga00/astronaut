@@ -201,7 +201,24 @@ p {
   background-size:20px 18px;
 }
 
+.control-button#power-button {
+  background-color:darken(@primary-accent,0%);
+  border-color:darken(@primary-accent,7%);
+  position:absolute;
+  left:20px;
+  z-index:4;
+  &.powered-down {
+    border-color:white;
+    box-shadow: 0 0 0 5000px rgba(0,0,0,0.8);
+  }
+  .icon {
+    background: url('/images/glyphicons_063_power.png') no-repeat center;
+    background-size:22px 24px;
+  }
+}
+
 .control-button#share-video {
+  padding:0;
   position:absolute;
   right:20px;
   .icon {
