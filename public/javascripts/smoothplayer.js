@@ -128,7 +128,7 @@ var SmoothPlayer = {
             player.unMute();
         }
         player.visible = true;
-        if (play || play == 'undefined') {
+        if (play || play == undefined) {
             player.playVideo();
         }
 
