@@ -2,10 +2,10 @@
   getting youtube videos
 */
 
-// seconds
-var MINIMUM_DURATION = 10
-// milliseconds
-var REQUEST_DELAY = 500
+require('./arrayutil');
+
+var MINIMUM_VIDEO_DURATION_SEC = 10
+var REQUEST_DELAY_MSEC = 2000
 
 var http = require('http'),
     querystring = require('querystring');
@@ -21,7 +21,7 @@ function parseVids(obj) {
     var dataObj = obj['data']
     if (dataObj.hasOwnProperty('items')) {
       return dataObj['items'].filter(function(item) {
-        return (item['duration'] > MINIMUM_DURATION);
+        return (item['duration'] > MINIMUM_VIDEO_DURATION_SEC);
       }).map(function(item) {
         return item['id']
       });
@@ -41,6 +41,7 @@ function parseVids(obj) {
   startIndex:   'DSC 0001' would be 1
   endIndex:     'DSC 0234' would be 234
   vidCallback:  function(vids) processes an array of vidids
+  endCallback:  function() called when everything is done
 */
 function getVids(args) {
 
@@ -49,6 +50,7 @@ function getVids(args) {
   var endIndex = args.endIndex || 10;
   var maxResultsPerQuery = args.maxResultsPerQuery || -1;
   var vidCallback = args.vidCallback;
+  var endCallback = args.endCallback;
 
   console.log('Getting youtube vids:');
   console.log('tags: ', tags);
@@ -57,7 +59,6 @@ function getVids(args) {
   console.log('maxResultsPerQuery: ', maxResultsPerQuery);
   console.log('');
 
-  var vids = [];
   var host = "gdata.youtube.com"
   var path = "/feeds/api/videos?";
   var queries = [];
@@ -72,7 +73,7 @@ function getVids(args) {
           embed: 'allowed',
           v: 2,
           alt: 'jsonc',
-          time: 'this_month',
+          time: 'this_week',
           'start-index': 1
         };
         params['q'] = "\"" + tag + " " + pad(j, 4) + "\"";
@@ -80,14 +81,19 @@ function getVids(args) {
     }
   }
 
+  // shuffle them so the indices are not contiguous
+  queries.shuffle();
+
   // console.log('QUERIES:', queries);
-  //worker for the queue of queries
+  // worker for the queue of queries
   function work() {
     var params = queries.pop();
-    console.log('search for: ', params['q']);
     var startIndex = params['start-index'];
     var thePath = path + querystring.stringify(params);
+
+    console.log('search for: ', params['q']);
     console.log(thePath);
+
     http.get({host: host, port: 80, path: thePath}, function(res) {
       console.log("Response Code: " + res.statusCode);
         var data = "";
@@ -99,7 +105,7 @@ function getVids(args) {
           var parsedVids = parseVids(obj);
           if (parsedVids.length > 0) {
             console.log('retrieved', parsedVids.length, 'vids');
-            vids = vids.concat(parsedVids);
+            vidCallback(parsedVids);
             //enqueue a new request
             params['start-index'] = startIndex + parsedVids.length;
 
@@ -110,16 +116,20 @@ function getVids(args) {
             }
           }
           if (queries.length == 0) {
-            vidCallback(vids);
+            // we are done
+            if (endCallback) {
+              endCallback();
+            }
           } else {
-            setTimeout(work, REQUEST_DELAY);
+            // schedule the next request
+            setTimeout(work, REQUEST_DELAY_MSEC);
           }
-          console.log('');
         });
 
     }).on('error', function(e) {
       console.log("Got error: " + e.message);
-      vidCallback(vids);
+      // probably not the best exit strategy here?
+      endCallback();
     });
   }
 

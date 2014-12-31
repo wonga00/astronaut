@@ -24,7 +24,7 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-  videoStream.setCrawlEnabled(false);
+  videoStream.setCrawlEnabled(true);
 });
 
 app.configure('production', function(){
@@ -62,12 +62,19 @@ app.get('/v/:vidId', function(req, res) {
   });
 });
 
-app.get('/z/', function(req, res) {
+app.get('/z', function(req, res) {
   res.render('admin.ejs', {
     title: 'Admin',
     numVideos: videoStream.numVideos(),
     numConnections: io.sockets.clients().length,
     lastRefresh: videoStream.lastRefresh()
+  });
+});
+
+app.get('/grid', function(req, res) {
+  res.render('grid.ejs', {
+    title: 'Grid',
+    videos: videoStream.videos()
   });
 });
 

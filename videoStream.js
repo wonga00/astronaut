@@ -6,19 +6,20 @@
     receives a video, timestamp at regular intervals
 */
 
+require('./arrayutil');
+
 var csv = require('csv')
-  , youtube = require('./worker/youtube');
+  , youtube = require('./youtube');
 
 var CRAWL_ENABLED = true;
 var VIDEO_INTERVAL = 5000;
-var videos = [];
-var index = 0;
+var REFRESH_INTERVAL = 86400000 //one day
 var DATA_FILE = __dirname + '/data.txt';
-var intervalId = 0;
+var sendVideoTimer = 0;
+var crawlTimer = 0;
 var currentVid = {};
 var lastRefresh;
 var videoCallback;
-var REFRESH_INTERVAL = 86400000 //one day
 
 var adIndex = 0;
 // these are the interstitual videos
@@ -26,23 +27,71 @@ var ads = ["Ip2ZGND1I9Q"];
 var lastAdTime = new Date();
 var AD_INTERVAL = 60000 * 3; //time in between ads in milliseconds
 
-/*
-  fisher-yates shuffle algorithm taken from
-  http://sedition.com/perl/javascript-fy.html
-*/
 
-Array.prototype.shuffle = function() {
-  var i = this.length;
-  if ( i == 0 ) return;
-  while ( --i ) {
-     var j = Math.floor( Math.random() * ( i + 1 ) );
-     var tempi = this[i];
-     var tempj = this[j];
-     this[i] = tempj;
-     this[j] = tempi;
-   }
-   return this;
+function Queue(queueSize) {
+  /*
+    fixed size queue
+    queueSize
+    prunes duplicates
+    oldest items will be eliminated
+
+    // this could be backed on disk later
+  */
+  this.queueSize = queueSize;
+  this.queue = [];
+  this.uniqueItems = {};
+  this.index = 0;
+
+  this.add = function(items) {
+    var added = [];
+    var that = this;
+    for (var i=0; i<items.length; i++) {
+      if (!this.uniqueItems[items[i]]) {
+        this.uniqueItems[items[i]] = items[i];
+        added.push(items[i]);
+      }
+    }
+    this.queue = this.queue.concat(added);
+    this._prune();
+  };
+
+  this._prune = function() {
+    // removes old videos pass the limit
+    var over = this.queue.length - this.queueSize;
+    if (over > 0) {
+      var removed = this.queue.splice(0, over);
+      this.index = this.index - over;
+      if (this.index < 0) {
+        this.index = 0;
+      }
+      for (var i=0; i < removed.length; i++) {
+        delete this.uniqueItems[removed[i]];
+      }
+    }
+  }
+
+  this.next = function() {
+
+    if (this.queue.length == 0) {
+      return undefined;
+    }
+
+    this.index = this.index % this.queue.length;
+    var vid = this.queue[this.index];
+    this.index = (this.index + 1) % this.queue.length;
+    if (this.index == 0) {
+      // shuffle the queue when we loop around
+      this.queue.shuffle();
+    }
+    return vid;
+  }
+
+  this.getLength = function() {
+    return this.queue.length;
+  }
 }
+
+var queue = new Queue(10000);
 
 function shouldSendAd() {
   var now = new Date();
@@ -56,22 +105,18 @@ function getNextAd() {
   return vid;
 }
 
-function getNextVid() {
-  if (index == videos.length) {
-    videos.shuffle();
-    index = 0;
-  }
-  return videos[index++];
-}
-
 function sendVideo() {
   var vid, offset;
   if (shouldSendAd()) {
     vid = getNextAd();
     offset = 10 + Math.floor( Math.random() * 40 );
   } else {
-    vid = getNextVid();
+    vid = queue.next();
     offset = 0;
+  }
+
+  if (!vid) {
+    return;
   }
 
   var data = {
@@ -83,15 +128,12 @@ function sendVideo() {
   currentVid = data;
 
   if (videoCallback) {
-      videoCallback(currentVid);
+    videoCallback(currentVid);
   }
 }
 
 function loadVideos(vids) {
-    clearInterval(intervalId);
-    videos = vids.shuffle();
-    index = 0;
-    intervalId = setInterval(sendVideo, VIDEO_INTERVAL);
+    queue.add(vids.shuffle());
     lastRefresh = new Date();
 }
 
@@ -124,13 +166,17 @@ function getFreshVideos() {
   });
 }
 
-function start(video) {
-    videoCallback = video;
-    readVideos();
+function start(sendVideoCallback) {
+    videoCallback = sendVideoCallback;
     if (CRAWL_ENABLED) {
       getFreshVideos();
-      setInterval(getFreshVideos, REFRESH_INTERVAL);
+    } else {
+      readVideos();
     }
+    clearInterval(crawlTimer);
+    crawlTimer = setInterval(getFreshVideos, REFRESH_INTERVAL);
+    clearInterval(sendVideoTimer);
+    sendVideoTimer = setInterval(sendVideo, VIDEO_INTERVAL);
 }
 
 exports.start = start;
@@ -145,5 +191,8 @@ exports.lastRefresh = function() {
     return lastRefresh;
 };
 exports.numVideos = function() {
-    return videos.length;
+  return queue.getLength();
 };
+exports.videos = function() {
+  return queue.queue.slice(0, 500);
+}
