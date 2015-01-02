@@ -42,12 +42,17 @@ function Queue(queueSize) {
   this.uniqueItems = {};
   this.index = 0;
 
+  this.itemKey = function(item) {
+    return item.id;
+  }
+
   this.add = function(items) {
     var added = [];
     var that = this;
     for (var i=0; i<items.length; i++) {
-      if (!this.uniqueItems[items[i]]) {
-        this.uniqueItems[items[i]] = items[i];
+      var key = this.itemKey(items[i]);
+      if (!this.uniqueItems[key]) {
+        this.uniqueItems[key] = items[i];
         added.push(items[i]);
       }
     }
@@ -65,7 +70,8 @@ function Queue(queueSize) {
         this.index = 0;
       }
       for (var i=0; i < removed.length; i++) {
-        delete this.uniqueItems[removed[i]];
+        var key = this.itemKey(removed[i]);
+        delete this.uniqueItems[key];
       }
     }
   }
@@ -111,8 +117,11 @@ function sendVideo() {
     vid = getNextAd();
     offset = 10 + Math.floor( Math.random() * 40 );
   } else {
-    vid = queue.next();
-    offset = 0;
+    var video = queue.next();
+    if (video) {
+      vid = video.id;
+      offset = 0;
+    }
   }
 
   if (!vid) {

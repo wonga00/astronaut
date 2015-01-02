@@ -8,46 +8,53 @@
     width: 100%;
     height: 100%;
 }
-.player {
+.thumb {
+    position: relative;
     border: 1px solid white;
     width: 160px;
     height: 120px;
     display: inline-block;
     margin: 0px;
 }
+.thumb img {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+.thumb p {
+    color: #0F0;
+    font-size: 12;
+    margin: 0;
+}
+#viewCount {
+    position: absolute;
+    text-align: right;
+    right: 1px;
+    bottom: 1px;
+}
+#uploaded {
+    position: absolute;
+    text-align: left;
+    left: 2px;
+    bottom: 1px;
+}
 </style>
+
 <body>
 <div id="container">
-</div>
-<script>
 
-var videos = [
 <% for(var i=0; i<videos.length; i++) {%>
-    '<%= videos[i] %>',
+    <a href='https://www.youtube.com/watch?v=<%= videos[i].id %>' target='_blank'>
+        <div class="thumb">
+            <img src='http://img.youtube.com/vi/<%= videos[i].id %>/0.jpg'>
+            <p id="viewCount"><%= videos[i].viewCount || '--'%></p>
+            <p id="uploaded"><%= moment(videos[i].uploaded).format("MM-DD h:mm a") %></p>
+        </div>
+    </a>
 <% } %>
-];
 
-function thumbnailUrl(vidid) {
-    return 'http://img.youtube.com/vi/' + vidid + '/0.jpg';
-}
-
-function videoUrl(vidid) {
-    return 'https://www.youtube.com/watch?v=' + vidid;
-}
-
-var container = document.getElementById('container');
-
-for (var i=0; i<videos.length; i++) {
-    var a = document.createElement('a');
-    a.setAttribute('href', videoUrl(videos[i]));
-    a.setAttribute('target', '_blank');
-    var d = document.createElement('img');
-    d.className = 'player';
-    d.id = 'player_' + i.toString();
-    d.setAttribute('src', thumbnailUrl(videos[i]));
-    a.appendChild(d);
-    container.appendChild(a);
-}
+</div>
 </script>
 </body>
 </html>

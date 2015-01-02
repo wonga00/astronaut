@@ -8,6 +8,7 @@ var express = require('express')
   , http = require('http')
   , server = http.createServer(app)
   , io = require('socket.io').listen(server)
+  , moment = require('moment')
   , videoStream = require('./videoStream.js');
 
 
@@ -74,7 +75,8 @@ app.get('/z', function(req, res) {
 app.get('/grid', function(req, res) {
   res.render('grid.ejs', {
     title: 'Grid',
-    videos: videoStream.videos()
+    videos: videoStream.videos(),
+    moment: moment
   });
 });
 

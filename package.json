@@ -4,10 +4,10 @@
   , "version": "0.0.1"
   , "private": true
   , "dependencies": {
-      "socket.io": "0.8.7",
-      "express": "3.0.3"
-    , "jade": "0.0.1"
+      "socket.io": "0.8.7"
+    , "express": "3.0.3"
     , "csv": "0.2.2"
     , "ejs": "0.8.3"
+    , "moment": "2.8.4"
   }
 }

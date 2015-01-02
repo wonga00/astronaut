@@ -23,7 +23,11 @@ function parseVids(obj) {
       return dataObj['items'].filter(function(item) {
         return (item['duration'] > MINIMUM_VIDEO_DURATION_SEC);
       }).map(function(item) {
-        return item['id']
+        return {
+          id: item['id'],
+          uploaded: item['uploaded'],
+          viewCount: item['viewCount']
+        }
       });
     }
   }
