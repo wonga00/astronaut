@@ -50,7 +50,7 @@ io.sockets.on('connection', function(socket) {
 app.get('/',  function(req, res){
   res.render('index.ejs', {
     host: "http://astronaut.io",
-    vidId: ""
+    vid: ""
   });
 });
 

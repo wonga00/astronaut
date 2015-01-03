@@ -13,12 +13,14 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <link rel="shortcut icon" href="/favicon.ico">
 <script>
   var config = {
+    <%if (vid) { %>
       sharedVid: {
         id: "<%= vid.id %>",
         viewCount: <%= vid.viewCount %>,
         uploaded: "<%= vid.uploaded %>"
-      }
-      , host: "<%= host %>"
+      },
+    <% } %>
+      host: "<%= host %>"
     };
 </script>
 <script type="text/javascript" src="/javascripts/handlebars-v2.0.0.js"></script>
