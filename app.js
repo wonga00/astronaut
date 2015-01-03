@@ -59,7 +59,11 @@ app.get('/v/:vidId', function(req, res) {
   //use render here
   res.render('index.ejs', {
     host: "http://astronaut.io",
-    vidId: vidId
+    vid: {
+      id: vidId,
+      viewCount: 1000,
+      uploaded: '2015-01-01T15:29:36Z'
+    }
   });
 });
 

@@ -12,9 +12,16 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <link rel="stylesheet/less" type="text/css" href="/stylesheets/style.less" />
 <link rel="shortcut icon" href="/favicon.ico">
 <script>
-  var config = {sharedVid: "<%= vidId %>", host: "<%= host %>"};
+  var config = {
+      sharedVid: {
+        id: "<%= vid.id %>",
+        viewCount: <%= vid.viewCount %>,
+        uploaded: "<%= vid.uploaded %>"
+      }
+      , host: "<%= host %>"
+    };
 </script>
-<script type="text/javascript" src="javascripts/handlebars-v2.0.0.js"></script>
+<script type="text/javascript" src="/javascripts/handlebars-v2.0.0.js"></script>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="/javascripts/swfobject.js"></script>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
@@ -36,7 +43,6 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
   bottom: 0px;
   right: 0px;
   left: 0px;
-  font-family: 'DIN Alternate';
   z-index: 3;
   text-align: center;
 }
@@ -124,7 +130,8 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
     </div>
   </div><!--END controls-->
   <div id="controls-background"></div>
-
+  <div id="summary">
+  </div>
 <!--TOOLTIP-->
 <div class="tooltip-container"></div>
 

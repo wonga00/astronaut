@@ -197,7 +197,6 @@ function powerPressed() {
     buildSummary();
     $('#summary').css('display', 'inline');
     mutePressed();
-    //SmoothPlayer.resume();
     power=0;
   }
   else {
@@ -205,7 +204,6 @@ function powerPressed() {
     $('#summary').css('display', 'none');
     SmoothPlayer.setRecording(true);
     mutePressed();
-    //SmoothPlayer.pause();
     power=1;
   }
 }
@@ -295,6 +293,7 @@ function initSocket() {
 }
 
 function playSharedVid() {
+  console.log('playing', config.sharedVid);
   SmoothPlayer.play(config.sharedVid, 0);
 }
 
