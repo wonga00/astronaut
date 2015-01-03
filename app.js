@@ -84,5 +84,5 @@ server.listen(process.env['app_port'] || 3000);
 console.log("Astronaut server listening on port %d in %s mode", server.address().port, app.settings.env);
 
 videoStream.start(function(data) {
-  io.sockets.emit('vid', data);
+  io.sockets.emit('video', data);
 });

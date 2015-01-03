@@ -108,28 +108,30 @@ function getNextAd() {
   var vid = ads[adIndex];
   adIndex = (adIndex + 1) % ads.length;
   lastAdTime = new Date();
-  return vid;
+  // we have to match the same format as a normal video
+  return {
+    id: vid,
+    viewCount: 1000,
+    uploaded: '2015-01-01T15:29:36Z'
+  }
 }
 
 function sendVideo() {
-  var vid, offset;
+  var video, offset;
   if (shouldSendAd()) {
-    vid = getNextAd();
+    video = getNextAd();
     offset = 10 + Math.floor( Math.random() * 40 );
   } else {
     var video = queue.next();
-    if (video) {
-      vid = video.id;
-      offset = 0;
-    }
+    offset = 0;
   }
 
-  if (!vid) {
+  if (!video) {
     return;
   }
 
   var data = {
-    vid: vid,
+    video: video,
     time: (new Date())/1000,
     offset: offset
   };

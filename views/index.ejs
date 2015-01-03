@@ -14,10 +14,11 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <script>
   var config = {sharedVid: "<%= vidId %>", host: "<%= host %>"};
 </script>
+<script type="text/javascript" src="javascripts/handlebars-v2.0.0.js"></script>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="/javascripts/swfobject.js"></script>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
-<script type="text/javascript" src="/javascripts/smoothplayer.js"></script>
+<script type="text/javascript" src="/javascripts/smoothplayer.js?v=3"></script>
 <script type="text/javascript" src="/javascripts/remote.js"></script>
 <script type="text/javascript" src="/javascripts/less-1.3.3.min.js"></script>
 <script type="text/javascript" src="/javascripts/bootstrap.min.js"></script>
@@ -25,6 +26,73 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 </head>
 
+<style>
+
+#summary {
+  position: fixed;
+  background: rgba(44, 60, 72, 0.8);
+  display: none;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  font-family: 'DIN Alternate';
+  z-index: 3;
+  text-align: center;
+}
+#summary h1 {
+  color: #C0C5C1;
+  text-transform: uppercase;
+  font-size: 19pt;
+  padding: 50px;
+}
+#summary ul {
+  display: inline;
+  list-style-type: none;
+  padding-right: 20px;
+}
+
+.thumb-container {
+  display: inline-block;
+  margin: auto;
+}
+
+.thumb {
+  position: relative;
+  width: 160px;
+  height: 200px;
+  display: inline-block;
+  margin: 20px;
+}
+.thumb img {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    border:1px solid #;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    margin-bottom: 13px;
+}
+.thumb p {
+    color: #AEB4B9;
+    font-size: 12;
+    text-transform: uppercase;
+    margin: 0;
+    text-align: left;
+    padding-bottom: 2px;
+}
+.thumb .viewCount {
+  color: #AEB4B9;
+}
+.thumb .uploaded {
+  color: #FFF;
+}
+.thumb .action {
+  color: #ffd039;
+}
+
+</style>
 <body onbeforeunload=javascript:onExit()>
 <div id="top-section">
   <div id="smooth-container">
@@ -52,6 +120,8 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
         <div class="icon"></div>
       </a>
     </div>
+  </div>
+  <div id="summary">
   </div>
 </div>
 
@@ -84,6 +154,22 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
   </div>
 </div>
 <div class="tooltip-container"></div>
+
+
+<script id="summary-template" type="text/x-handlebars-template">
+  <h1 id="summary-title">Previously on Astronaut</h1>
+  <div class='thumb-container'>
+    {{#each videos}}
+      <div class="thumb">
+        <img src="http://img.youtube.com/vi/{{ id }}/0.jpg">
+        <p class="viewCount">{{ viewCount }} views</p>
+        <p class="uploaded {{uploaded-class}} ">{{ uploaded }}</p>
+        <p class="action">{{ action }}</p>
+      </div>
+     {{/each}}
+  </div>
+  <h1 id="summary-caption">Astronaut</h1>
+</script>
 
 <script type="text/javascript">
 

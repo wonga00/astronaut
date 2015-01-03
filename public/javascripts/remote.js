@@ -143,15 +143,67 @@ $(document).ready(function() {
     });
 });
 
+function timeSince(date) {
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval > 1) {
+        return interval + " yrs";
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+        return interval + " months";
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+        return interval + " days";
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+        return interval + " hrs";
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+        return interval + " min";
+    }
+    return Math.floor(seconds) + " sec";
+}
+
+function buildSummary() {
+  // builds the summary videos
+  var videos = SmoothPlayer.seenVideos().slice(-5);
+  videos = videos.map(function(video) {
+    return {
+      id: video.id,
+      viewCount: video.viewCount,
+      uploaded: timeSince(new Date(video.uploaded)) + ' ago',
+      action: video.action
+    };
+  });
+
+  var source   = $("#summary-template").html();
+  var template = Handlebars.compile(source);
+  var context = {videos: videos };
+  var html    = template(context);
+  $('#summary').html(html);
+}
+
 function powerPressed() {
   if (power==1) {
     $("#power-button").addClass("powered-down");
+    SmoothPlayer.setRecording(false);
+    buildSummary();
+    $('#summary').css('display', 'inline');
     mutePressed();
     //SmoothPlayer.resume();
     power=0;
   }
   else {
     $("#power-button").removeClass("powered-down");
+    $('#summary').css('display', 'none');
+    SmoothPlayer.setRecording(true);
     mutePressed();
     //SmoothPlayer.pause();
     power=1;
@@ -238,9 +290,9 @@ function onExit() {
 function initSocket() {
     var socket = io.connect();
     //establish a command pattern on the server to parse out messages
-    socket.on('vid', function(data) {
+    socket.on('video', function(data) {
         console.log(data);
-        processVid(data);
+        processVideo(data);
     });
 }
 
@@ -248,13 +300,14 @@ function playSharedVid() {
   SmoothPlayer.play(config.sharedVid, 0);
 }
 
-function processVid(data) {
-    if (currentId!=data.vid) {
+function processVideo(data) {
+  console.log('processVideo', data);
+    if (currentId!=data.video.id) {
         var currentTime = (new Date())/1000;
         var seekTime = (currentTime < data.time) ? 0 : (currentTime - data.time);
         seekTime += data.offset;
-        SmoothPlayer.play(data.vid, seekTime);
-        currentId=data.vid;
+        SmoothPlayer.play(data.video, seekTime);
+        currentId=data.video.id;
     }
 }
 

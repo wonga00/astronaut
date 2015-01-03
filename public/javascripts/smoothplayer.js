@@ -97,7 +97,8 @@ var SmoothPlayer = {
         this.onReady = onReady;
         this.onResume = onResume;
         this.onStart = onStart;
-
+        this.seen = [];
+        this.recording = true;
         document.getElementById(divname).innerHTML = "<div id =\"smoothplay_1\"></div><div id=\"smoothplay_2\"></div><div id=\"smoothplay_3\"></div><div id=\"soundplayer\"></div>";
         this.createPlayer("smoothplay_1","p1", this.width, this.height);
         this.createPlayer("smoothplay_2","p2", 1, 1);
@@ -119,6 +120,7 @@ var SmoothPlayer = {
         if (player.visible == true) {
             return;
         }
+        this.recordSeen(player.video);
         player.height = this.height;
         player.width = this.width;
         player.className = "playing";
@@ -153,11 +155,12 @@ var SmoothPlayer = {
 
     //this will queue up the next video and then toggle once it is buffered
     //vidID:String
-    play : function(vidID, seekTime) {
+    play : function(video, seekTime) {
         //determine the player to use as a buffer
         if (!this.ready) {
             return false;
         }
+        var vidID = video.id;
         console.log("Playing " + vidID + " in " + this.buffering.id);
         if (seekTime) {
             this.buffering.loadVideoById(vidID, seekTime);
@@ -166,6 +169,7 @@ var SmoothPlayer = {
         }
         //store the id with the player
         this.vids[this.buffering.id] = vidID;
+        this.buffering.video = video;
         return true;
     },
 
@@ -201,6 +205,20 @@ var SmoothPlayer = {
         var tmp = this[b];
         this[b] = this[a];
         this[a] = tmp;
+    },
+
+    setRecording: function(on) {
+        this.recording = on;
+    },
+
+    recordSeen: function(video) {
+        if (video && this.recording && this.seen.indexOf(video) == -1) {
+            this.seen.push(video);
+        }
+    },
+
+    seenVideos: function() {
+        return this.seen;
     },
 
     //this is called when a video is done buffering and ready to be played

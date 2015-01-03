@@ -26,7 +26,7 @@ function parseVids(obj) {
         return {
           id: item['id'],
           uploaded: item['uploaded'],
-          viewCount: item['viewCount']
+          viewCount: item['viewCount'] || 0
         }
       });
     }
