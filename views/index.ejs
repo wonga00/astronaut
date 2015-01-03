@@ -7,10 +7,10 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <meta name="description" content="Home videos from the past week">
 <meta name="author" content="James Thompson and Andrew Wong" />
 <meta charset="UTF-8" />
+<link href="webfonts/ss-gizmo.css" rel="stylesheet" />
 <link rel="stylesheet/less" type="text/css" href="/stylesheets/bootstrap.min.css" />
 <link rel="stylesheet/less" type="text/css" href="/stylesheets/style.less" />
 <link rel="shortcut icon" href="/favicon.ico">
-<link href='http://fonts.googleapis.com/css?family=Roboto:500,300' rel='stylesheet' type='text/css'>
 <script>
   var config = {sharedVid: "<%= vidId %>", host: "<%= host %>"};
 </script>
@@ -93,68 +93,40 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 }
 
 </style>
+
 <body onbeforeunload=javascript:onExit()>
-<div id="top-section">
-  <div id="smooth-container">
-    <div id="smooth"></div>
-  </div>
-  <div id="buttons-container">
-    <div id="buttons">
-      <div class="control-button" id="power-button" data-toggle="tooltip">
-        <div class="icon"></div>
-      </div>
+
+  <!--VIDEO-->
+  <div id="smooth"></div>
+
+  <!--CONTROLS-->
+  <div id="controls">
+    <div class="control-button" id="power-button" data-toggle="tooltip">
+      <div class="icon ss-icon">globe</div>
+    </div>
+    <div id="button-group">
       <div class="control-button" id="back" data-toggle="tooltip">
-        <div class="icon"></div>
+        <div class="icon ss-icon">previous</div>
       </div>
       <div class="control-button" id="hold" data-toggle="tooltip">
-        <div class="icon"></div>
+        <div class="icon ss-icon">stop</div>
       </div>
       <div class="control-button" id="live" data-toggle="tooltip">
-        <div class="icon"></div>
+        <div class="icon ss-icon">next</div>
       </div>
-      <div id="control-status" class="label">
-        <div id="control-status-live"></div>
-        <div id="control-status-message">Live Stream</div>
-      </div>
-      <a class="control-button" id="share-video" toggle="tooltip">
-        <div class="icon"></div>
-      </a>
+    </div><!--END button-group-->
+    <div id="control-status" class="label">
+      <div id="control-status-dot" class="live"></div>
+      <div id="control-status-message">Live Stream</div>
     </div>
-  </div>
-  <div id="summary">
-  </div>
-</div>
+    <div class="control-button" id="share-video" toggle="tooltip">
+      <div class="icon ss-icon">upload</div>
+    </div>
+  </div><!--END controls-->
+  <div id="controls-background"></div>
 
-<div id="bottom-section">
-
-  <div id="mute">((( SOUND )))</div>
-
-  <div id="headline-container">
-    <div id="headline"><span>Scenes from this week</span></div>
-  </div>
-  <div id="description">
-    <span>
-      <p>Today, you are an astronaut. You are floating in inner space 100 miles above the surface of Earth. You peer through your telescope and this is what you see. You are people watching. These are fleeting moments.</p>
-
-      <p>These videos come from YouTube. They were uploaded some time in the past week and have titles like <code>DSC</code> <code>1234</code> and <code>IMG</code> <code>4321</code>. Most have fewer than five (5) views. They are unnamed, unedited, and unseen by anyone but you.</p>
-
-      <p>The controls are simple. If you like a video and wish it not to switch, you can press the hold button <span class="inline-icon hold"></span>. If a video switches before you’ve a chance to press hold, you can press the back button <span class="inline-icon back"></span> which will return to and hold the previous video. You can return to the live stream by pressing the live button <span class="inline-icon live"></span>. You will also notice a share button <span class="inline-icon share"></span> located to the right of the video controls. This allows you to share the presently playing video.</p>
-
-      <p>As a convenience, use the following keyboard shortcuts: The <code>down</code> arrow maps to the hold button; the <code>left</code> arrow maps to the back button; and the <code>right</code> arrow maps to the live stream button. Pressing <code>m</code> will mute the video.</p>
-
-      <p>For those of you with friends in faraway places, you can take advantage of Astronaut’s Global Synchronization Capability. Have your friend open Astronaut on their own computer. You’ll be pleased to find that their live stream is synchronized with yours. Enjoy a shared moment.</p>
-
-      <p>Thank you for using Astronaut. Astronaut was made in San Francisco by James Thompson and Andrew Wong. Please <a href="mailto:astrojams1@gmail.com,wongavision@gmail.com">write us</a> with your feedback, comments, and sightings. Also, if you enjoy Astronaut, please share it with a friend:</p>
-
-      <a class="control-button" id="share-app">share astronaut</a>
-    </span>
-  </div>
-
-  <div id="footer">Copyright since 2011: <a href="http://www.jham.es">James Thompson</a> and <a href="http://wonga.io">Andrew Wong</a>
-  </div>
-</div>
+<!--TOOLTIP-->
 <div class="tooltip-container"></div>
-
 
 <script id="summary-template" type="text/x-handlebars-template">
   <h1 id="summary-title">Previously on Astronaut</h1>

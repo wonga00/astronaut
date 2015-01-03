@@ -51,9 +51,9 @@ $(document).ready(function() {
 
   if (config.sharedVid) {
     console.log("Received shared vid");
-    SmoothPlayer.init("smooth",960,540, playSharedVid, OnResume, OnStart);
+    SmoothPlayer.init("smooth","100%","100%", playSharedVid, OnResume, OnStart);
   } else {
-    SmoothPlayer.init("smooth",960,540, initSocket, OnResume, OnStart);
+    SmoothPlayer.init("smooth","100%","100%", initSocket, OnResume, OnStart);
   }
 
 
@@ -231,14 +231,11 @@ function holdPressed() {
 	if (hold) {
     console.log("holding");
 		SmoothPlayer.hold();
-    $("#back").attr("class","control-button hold-pressed");
-    $("#hold").attr("class","control-button inactive pressed");
-    $("#live").attr("class","control-button hold-pressed");
-    $("#control-status-live").css({"background-color":"rgba(0,0,0,0.1)"});
+    $("#back").attr("class","control-button");
+    $("#hold").attr("class","control-button pressed");
+    $("#live").attr("class","control-button");
+    $("#control-status-dot").attr("class","");
     $("#control-status-message").html("Holding current video");
-		//$("#back").animate({opacity:0.5},100);
-		//$("#hold").animate({opacity:0.5},100);
-		//$("#live").animate({opacity:1.0},400);
 		back=1;
 		hold=0;
 		live=1;
@@ -249,10 +246,10 @@ function holdPressed() {
 function backPressed() {
 	if (back) {
 		SmoothPlayer.goBack();
-    $("#back").attr("class","control-button inactive pressed");
-    $("#hold").attr("class","control-button inactive back-pressed");
+    $("#back").attr("class","control-button pressed");
+    $("#hold").attr("class","control-button disabled");
     $("#live").attr("class","control-button");
-    $("#control-status-live").css({"background-color":"rgba(0,0,0,0.1)"});
+    $("#control-status-dot").attr("class","");
     $("#control-status-message").html("Playing previous video");
 		//$("#back").animate({opacity:0.5},100);
 		//$("#hold").animate({opacity:0.5},100);
@@ -270,9 +267,10 @@ function livePressed() {
 		  SmoothPlayer.resume();
     }
     $("#back").attr("class","control-button");
-    $("#hold").attr("class","control-button live-pressed");
-    $("#live").attr("class","control-button inactive pressed");
-    $("#control-status-live").css({"background-color":"red"});
+    $("#hold").attr("class","control-button");
+    $("#live").attr("class","control-button pressed");
+    $("#live").attr("class","control-button pressed");
+    $("#control-status-dot").attr("class","live");
     $("#control-status-message").html("Live Stream");
 		//$("#back").animate({opacity:1.0},400);
 		//$("#hold").animate({opacity:1.0},400);
