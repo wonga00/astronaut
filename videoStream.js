@@ -122,7 +122,7 @@ function sendVideo() {
     video = getNextAd();
     offset = 10 + Math.floor( Math.random() * 40 );
   } else {
-    var video = queue.next();
+    video = queue.next();
     offset = 0;
   }
 
@@ -159,7 +159,12 @@ function readVideos() {
       return data;
   })
   .on('record',function(data, index){
-      vids.push(data[0]);
+      vids.push({
+          id: data[0],
+          uploaded: '2015-07-26T23:36:35.599Z',
+          viewCount: 3,
+          duration: 400
+      });
   })
   .on('end',function(count){
       console.log('Read in', count, 'videos.');
