@@ -17,20 +17,6 @@ example embeddable video ids:
 
 to rebuild the sample video file
 ```
-node buildData.js
+YT_API_KEY={API_KEY} node buildData.js
 ```
 this will write a new `data.txt`
-
-
-### Deployment
-
-to push to nodester:
-```
-git push nodester master
-```
-
-to get logs:
-```
-nodester app logs astronaut
-```
-

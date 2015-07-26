@@ -1,144 +1,197 @@
 /*
-  getting youtube videos
+    getting youtube videos
 */
 
 require('./arrayutil');
+var request = require('request');
+var moment = require('moment');
 
-var MINIMUM_VIDEO_DURATION_SEC = 10
-var REQUEST_DELAY_MSEC = 2000
-
-var http = require('http'),
-    querystring = require('querystring');
+var MINIMUM_VIDEO_DURATION_SEC = 10;
+var REQUEST_DELAY_MSEC = 2000;
+var API_KEY = process.env.YT_API_KEY;
 
 function pad(num, size) {
-    var s = num+"";
-    while (s.length < size) s = "0" + s;
+    var s = num + '';
+    while (s.length < size) s = '0' + s;
     return s;
 }
 
 function parseVids(obj) {
-  if (obj.hasOwnProperty('data')) {
-    var dataObj = obj['data']
-    if (dataObj.hasOwnProperty('items')) {
-      return dataObj['items'].filter(function(item) {
-        return (item['duration'] > MINIMUM_VIDEO_DURATION_SEC);
-      }).map(function(item) {
-        return {
-          id: item['id'],
-          uploaded: item['uploaded'],
-          viewCount: item['viewCount'] || 0
-        }
-      });
+    if (obj.hasOwnProperty('items')) {
+        var items = obj['items'];
+        return items.map(function(item) {
+            var duration = moment.duration(
+                item['contentDetails']['duration']).asSeconds();
+
+            return {
+                id: item['id'],
+                uploaded: item['snippet']['publishedAt'],
+                viewCount: item['statistics']['viewCount'],
+                duration: duration
+            };
+        });
     }
-  }
-  return [];
+    return [];
+}
+
+function createQueries(startIndex, endIndex, tags) {
+    queries = [];
+    // construct queries to consume
+    for (var i = 0; i < tags.length; i++) {
+        var tag = tags[i];
+        var j = startIndex;
+        for (var j = endIndex; j >= startIndex; j--) {
+            var params = {
+                embed: 'allowed',
+                time: 'this_week'
+            };
+            params['q'] = '\"' + tag + ' ' + pad(j, 4) + '\"';
+            queries.push(params);
+        }
+    }
+    return queries;
+}
+
+
+/*
+search youtube
+
+params {
+    q: the search term
+    nextPageToken: optional next page token
+}
+
+cb(error, vids, nextParams)
+*/
+function search(params, cb) {
+    params['key'] = API_KEY;
+    params['part'] = params['part'] || 'snippet';
+    params['type'] = params['type'] || 'video';
+    params['order'] = params['order'] || 'date';
+    params['maxResults'] = 50;
+
+    request({
+        uri: 'https://www.googleapis.com/youtube/v3/search',
+        qs: params
+    }, function(error, response, body) {
+
+        if (error) {
+            cb(error, [], null);
+            return;
+        }
+
+        var data = JSON.parse(body);
+        var ids = data['items'].map(
+            function(item) {return item['id']['videoId'];});
+        var nextParams = data['nextPageToken'];
+
+        listVideos(ids, function(error, vids) {
+            vids = vids.filter(function(vid) {
+                return vid.duration > MINIMUM_VIDEO_DURATION_SEC;
+            });
+            cb(error, vids, nextParams)
+        });
+    });
 }
 
 /*
-  retrieves youtube videos of the form
+    List endpoint
+    gets additional metadata for video ids
 
-    TAG 000X
+    videoIds: ['ckjkfjl3', 'lckajckl2']
+    cb: function(error, videoObjects)
+*/
+function listVideos(videoIds, cb) {
 
-  ex. DSC 0001
+    var params = {};
+    params['key'] = API_KEY;
+    params['part'] = 'id,statistics,contentDetails,snippet';
+    params['id'] = videoIds.join(',');
+    params['maxResults'] = 50;
 
-  tags: is an array of number prefixes ex. dsc, img
-  startIndex:   'DSC 0001' would be 1
-  endIndex:     'DSC 0234' would be 234
-  vidCallback:  function(vids) processes an array of vidids
-  endCallback:  function() called when everything is done
+    request({
+        uri: 'https://www.googleapis.com/youtube/v3/videos',
+        qs: params
+    }, function(error, response, body) {
+        if (error) {
+            var videos = [];
+        } else {
+            videos = parseVids(JSON.parse(body));
+        }
+        cb(error, videos);
+    });
+}
+
+
+/*
+    retrieves youtube videos of the form
+
+        TAG 000X
+
+    ex. DSC 0001
+
+    tags: is an array of number prefixes ex. dsc, img
+    startIndex:   'DSC 0001' would be 1
+    endIndex:     'DSC 0234' would be 234
+    vidCallback:  function(vids) processes an array of vidids
+    endCallback:  function() called when everything is done
 */
 function getVids(args) {
 
-  var tags = args.tags || [];
-  var startIndex = args.startIndex || 1;
-  var endIndex = args.endIndex || 10;
-  var maxResultsPerQuery = args.maxResultsPerQuery || -1;
-  var vidCallback = args.vidCallback;
-  var endCallback = args.endCallback;
+    var tags = args.tags || [];
+    var startIndex = args.startIndex || 1;
+    var endIndex = args.endIndex || 10;
+    var maxResultsPerQuery = args.maxResultsPerQuery || -1;
+    var vidCallback = args.vidCallback;
 
-  console.log('Getting youtube vids:');
-  console.log('tags: ', tags);
-  console.log('startIndex: ', startIndex);
-  console.log('endIndex: ', endIndex);
-  console.log('maxResultsPerQuery: ', maxResultsPerQuery);
-  console.log('');
+    console.log('Getting youtube vids:');
+    console.log('tags: ', tags);
+    console.log('startIndex: ', startIndex);
+    console.log('endIndex: ', endIndex);
+    console.log('maxResultsPerQuery: ', maxResultsPerQuery);
+    console.log('');
 
-  var host = "gdata.youtube.com"
-  var path = "/feeds/api/videos?";
-  var queries = [];
+    var queries = createQueries(startIndex, endIndex, tags);
+    // shuffle them so the indices are not contiguous
+    queries.shuffle();
 
-  // construct queries to consume
-  for (var i = 0; i < tags.length; i++) {
-    var tag = tags[i];
-    var j = startIndex;
-    for (var j=endIndex; j >= startIndex; j--) {
-        // see https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters#Searching_for_Videos
-        var params = {
-          embed: 'allowed',
-          v: 2,
-          alt: 'jsonc',
-          time: 'this_week',
-          'start-index': 1
-        };
-        params['q'] = "\"" + tag + " " + pad(j, 4) + "\"";
-        queries.push(params);
+    var queryVidCount = {}; // keeps track of page counts per query
+
+    function work() {
+
+        var params = queries.pop();
+        console.log('search for: ', params['q']);
+
+        search(params, function(error, vids, nextParams) {
+            if (error) {
+                console.log('Got error: ' + error);
+                return;
+            }
+
+            console.log('retrieved', vids.length, 'vids');
+            vidCallback(vids);
+
+            if (queryVidCount[params.q]) {
+                queryVidCount[params['q']] += vids.length;
+            } else {
+                queryVidCount[params['q']] = vids.length;
+            }
+
+            // check if we need to schedule more work
+            if (nextParams && queryVidCount[params['q']] < maxResultsPerQuery) {
+                queries.push(nextParam);
+            }
+
+            if (queries.length > 0) {
+                setTimeout(work, REQUEST_DELAY_MSEC);
+            }
+
+        });
     }
-  }
 
-  // shuffle them so the indices are not contiguous
-  queries.shuffle();
-
-  // console.log('QUERIES:', queries);
-  // worker for the queue of queries
-  function work() {
-    var params = queries.pop();
-    var startIndex = params['start-index'];
-    var thePath = path + querystring.stringify(params);
-
-    console.log('search for: ', params['q']);
-    console.log(thePath);
-
-    http.get({host: host, port: 80, path: thePath}, function(res) {
-      console.log("Response Code: " + res.statusCode);
-        var data = "";
-        res.on('data', function (chunk) {
-          data += chunk;
-        });
-        res.on('end', function() {
-          var obj = JSON.parse(data);
-          var parsedVids = parseVids(obj);
-          if (parsedVids.length > 0) {
-            console.log('retrieved', parsedVids.length, 'vids');
-            vidCallback(parsedVids);
-            //enqueue a new request
-            params['start-index'] = startIndex + parsedVids.length;
-
-            if ((params['start_index'] <= maxResultsPerQuery) ||
-                (maxResultsPerQuery == -1)) {
-
-              queries.push(params);
-            }
-          }
-          if (queries.length == 0) {
-            // we are done
-            if (endCallback) {
-              endCallback();
-            }
-          } else {
-            // schedule the next request
-            setTimeout(work, REQUEST_DELAY_MSEC);
-          }
-        });
-
-    }).on('error', function(e) {
-      console.log("Got error: " + e.message);
-      // probably not the best exit strategy here?
-      endCallback();
-    });
-  }
-
-  //kick it off
-  work();
+    work();
 }
 
+exports.listVideos = listVideos;
+exports.search = search;
 exports.getVids = getVids;
