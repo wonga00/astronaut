@@ -144,8 +144,10 @@ function sendVideo() {
 }
 
 function loadVideos(vids) {
+  if (vids.length) {
     queue.add(vids.shuffle());
     lastRefresh = new Date();
+  }
 }
 
 function readVideos() {

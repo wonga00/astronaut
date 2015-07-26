@@ -41,10 +41,7 @@ function createQueries(startIndex, endIndex, tags) {
         var tag = tags[i];
         var j = startIndex;
         for (var j = endIndex; j >= startIndex; j--) {
-            var params = {
-                embed: 'allowed',
-                time: 'this_week'
-            };
+            var params = {};
             params['q'] = '\"' + tag + ' ' + pad(j, 4) + '\"';
             queries.push(params);
         }
@@ -64,11 +61,15 @@ params {
 cb(error, vids, nextParams)
 */
 function search(params, cb) {
+    var thisWeek = moment().add(-7, 'days').toISOString();
+
     params['key'] = API_KEY;
     params['part'] = params['part'] || 'snippet';
     params['type'] = params['type'] || 'video';
     params['order'] = params['order'] || 'date';
     params['maxResults'] = 50;
+    params['videoEmbeddable'] = 'true';
+    params['publishedAfter'] = thisWeek;
 
     request({
         uri: 'https://www.googleapis.com/youtube/v3/search',
@@ -179,6 +180,7 @@ function getVids(args) {
 
             // check if we need to schedule more work
             if (nextParams && queryVidCount[params['q']] < maxResultsPerQuery) {
+                console.log('get more...');
                 queries.push(nextParam);
             }
 
