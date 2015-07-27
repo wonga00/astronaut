@@ -200,6 +200,14 @@ function buildSummary() {
 //   }
 // }
 
+function isFullscreen() {
+  if ((!document.mozFullScreen && !document.webkitIsFullScreen)) {
+     return false;
+  } else {
+     return true;
+  }
+}
+
 function setMuted(muted) {
   if (muted) {
     $("#power-button").addClass("powered-down");
@@ -211,6 +219,13 @@ function setMuted(muted) {
     $("#mute").css({"text-decoration":"line-through"});
     $("#control-status-message").addClass("muted");
     SmoothPlayer.mute();
+
+    if (isFullscreen()) {
+      soundtrack.unMute();
+    } else {
+      soundtrack.mute();
+    }
+
     mute=1;
     power=0;
   } else {
@@ -222,13 +237,14 @@ function setMuted(muted) {
     $("#mute").css({"text-decoration":"none"});
     $("#control-status-message").removeClass("muted");
     SmoothPlayer.unMute();
+    soundtrack.mute();
     mute=0;
     power=1;
   }
 }
 
 function mutePressed() {
-	if (mute==0) {
+	if (mute == 0) {
     setMuted(true);
 	}
 	else {
