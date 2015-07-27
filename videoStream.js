@@ -24,6 +24,8 @@ var videoCallback;
 var adIndex = 0;
 // these are the interstitual videos
 var ads = ["Ip2ZGND1I9Q"];
+// enable this play list to bring in playlist videos as ads
+// var adPlayListId = 'PL0boS0-jubPp2EZC6tUFJKCaqMHCaOdL9';
 var lastAdTime = new Date();
 var AD_INTERVAL = 60000 * 3; //time in between ads in milliseconds
 
@@ -195,6 +197,13 @@ function start(sendVideoCallback) {
     crawlTimer = setInterval(getFreshVideos, REFRESH_INTERVAL);
     clearInterval(sendVideoTimer);
     sendVideoTimer = setInterval(sendVideo, VIDEO_INTERVAL);
+
+    if (adPlayListId) {
+      youtube.getPlaylist(adPlayListId, function(error, vids) {
+        console.log('replacing ads', vids);
+        ads = vids;
+      });
+    }
 }
 
 exports.start = start;

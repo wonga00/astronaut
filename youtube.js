@@ -114,8 +114,9 @@ function listVideos(videoIds, cb) {
         uri: 'https://www.googleapis.com/youtube/v3/videos',
         qs: params
     }, function(error, response, body) {
+        var videos;
         if (error) {
-            var videos = [];
+            videos = [];
         } else {
             videos = parseVids(JSON.parse(body));
         }
@@ -123,6 +124,34 @@ function listVideos(videoIds, cb) {
     });
 }
 
+/*
+    GET Playlist
+*/
+function getPlaylist(playlistId, cb) {
+    var params = {
+        key: API_KEY,
+        part: 'id,snippet',
+        playlistId: playlistId,
+        maxResults: 50
+    }
+    request({
+        uri: 'https://www.googleapis.com/youtube/v3/playlistItems',
+        qs: params,
+    }, function(error, response, body) {
+        if (error) {
+            console.log(error);
+            cb(error, []);
+            return;
+        }
+
+        var data = JSON.parse(body);
+        var vids = data['items'].map(function(item) {
+            return item['snippet']['resourceId']['videoId'];
+        });
+
+        cb(error, vids);
+    });
+}
 
 /*
     retrieves youtube videos of the form
@@ -197,3 +226,4 @@ function getVids(args) {
 exports.listVideos = listVideos;
 exports.search = search;
 exports.getVids = getVids;
+exports.getPlaylist = getPlaylist;
