@@ -42,12 +42,12 @@ $(document).ready(function() {
     container:".tooltip-container",
     placement:'bottom'
   });
-  $('#share-app').tooltip({
-    title:'Share Astronaut on Twitter',
-    delay:{show:100, hide:100},
-    container:".tooltip-container",
-    placement:'bottom'
-  });
+  // $('#share-app').tooltip({
+  //   title:'Share Astronaut on Twitter',
+  //   delay:{show:100, hide:100},
+  //   container:".tooltip-container",
+  //   placement:'bottom'
+  // });
 
   if (config.sharedVid) {
     console.log("Received shared vid");
@@ -107,39 +107,27 @@ $(document).ready(function() {
     return false;
   });
 
-  $('#share-app').click(function(event) {
-    var width  = 575,
-        height = 400,
-        left   = ($(window).width()-width)/2,
-        top    = ($(window).height()-height)/2,
-        url    = 'https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Fastronaut.io%2F&text=Check%20out%20Astronaut:&tw_p=tweetbutton&url=http%3A%2F%2Fastronaut.io%2F&via=astronautio',
-        opts   = 'status=1' +
-                 ',width='  + width  +
-                 ',height=' + height +
-                 ',top='    + top    +
-                 ',left='   + left;
-
-    window.open(url, 'twitter', opts);
-
-    return false;
-  });
-
 	//this is the listener for keypresses
 	$('body').keydown(function(event) {
 		console.log(event.which);
         if (event.which == 77) { //detect 'm'
-          mutePressed();
+          powerPressed();
         }
         else if (event.which == 37) { // detect 'left'
+          goFullscreen('smooth');
         	backPressed();
         }
         else if (event.which == 40) { //detect 'down'
+          goFullscreen('smooth');
           event.preventDefault();
         	holdPressed();
         }
         else if (event.which == 39) { //detect 'right'
         	livePressed();
+        } else if (event.which == 27) {
+          scrollDown();
         }
+
     });
 });
 
@@ -312,6 +300,10 @@ function OnResume() {
 	livePressed();
 }
 
+function scrollDown() {
+  $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+}
+
 function OnStart() {
   $('#smooth').animate({opacity:1}, 2000, function() {
     $("#smooth-container").css({"background-color": "#000"});
@@ -324,4 +316,6 @@ function OnStart() {
     holdPressed();
     initSocket();
   }
+
+  scrollDown();
 }

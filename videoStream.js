@@ -198,12 +198,12 @@ function start(sendVideoCallback) {
     clearInterval(sendVideoTimer);
     sendVideoTimer = setInterval(sendVideo, VIDEO_INTERVAL);
 
-    if (adPlayListId) {
-      youtube.getPlaylist(adPlayListId, function(error, vids) {
-        console.log('replacing ads', vids);
-        ads = vids;
-      });
-    }
+    // if (adPlayListId) {
+    //   youtube.getPlaylist(adPlayListId, function(error, vids) {
+    //     console.log('replacing ads', vids);
+    //     ads = vids;
+    //   });
+    // }
 }
 
 exports.start = start;
