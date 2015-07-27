@@ -122,7 +122,7 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 
       <p>As a convenience, use the following keyboard shortcuts: The <code>down</code> arrow maps to the hold button; the <code>left</code> arrow maps to the back button; and the <code>right</code> arrow maps to the live stream button. Pressing <code>m</code> will mute the video.</p>
 
-      <p>For those of you with friends in faraway places, you can take advantage of Astronaut’s <code>Global Synchronization Capability</code>. Have your friend open Astronaut on their own computer. You’ll be pleased to find that their live stream is synchronized with yours. Enjoy a shared moment.</p>
+      <p>For those of you with friends in faraway places, you can take advantage of Astronaut’s <code>Global Synchronization</code>. Have your friend open Astronaut on their own computer. You’ll be pleased to find that their live stream is synchronized with yours. Enjoy a shared moment.</p>
 
       <p>Thank you for using Astronaut. Astronaut was made in San Francisco by James Thompson and Andrew Wong. Please <a href="mailto:astrojams1@gmail.com,wongavision@gmail.com">write us</a> with your feedback, comments, and sightings. Also, if you enjoy Astronaut, please share it with a friend</p>
 
@@ -186,6 +186,7 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
     function onPlayerReady(event) {
       event.target.setLoop(true);
       event.target.playVideo();
+      event.target.mute();
     }
 
     // 5. The API calls this function when the player's state changes.
