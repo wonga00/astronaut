@@ -40,7 +40,7 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 #summary {
   font-family: 'Roboto', sans-serif;
   position: fixed;
-  background: rgba(44, 60, 72, 0.8);
+  background: rgba(30,35,40,0.9);
   display: none;
   top: 0px;
   bottom: 0px;
@@ -50,7 +50,7 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
   text-align: center;
 }
 #summary h1 {
-  color: #C0C5C1;
+  color: white;
   text-transform: uppercase;
   font-size: 19pt;
   padding: 50px;
@@ -84,7 +84,7 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
     margin-bottom: 13px;
 }
 .thumb p {
-    color: #AEB4B9;
+    color: white;
     font-size: 12;
     text-transform: uppercase;
     margin: 0;
@@ -92,13 +92,13 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
     padding-bottom: 2px;
 }
 .thumb .viewCount {
-  color: #AEB4B9;
+  color: white;
 }
 .thumb .uploaded {
-  color: #FFF;
+  color: white;
 }
 .thumb .action {
-  color: #ffd039;
+  color: white;
 }
 
 </style>
@@ -110,7 +110,7 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
   <div id="mute">((( SOUND )))</div>
 
   <div id="headline-container">
-    <div id="headline"><span>Scenes from this week</span></div>
+    <div id="headline"><span>Astronaut</span></div>
   </div>
   <div id="description">
     <span>
@@ -130,7 +130,7 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
     </span>
   </div>
 
-  <div id="footer">Copyright since 2011: <a href="http://www.jham.es">James Thompson</a> and <a href="http://wonga.io">Andrew Wong</a>
+  <div id="footer">Made since 2011 by <a href="http://www.jham.es">James Thompson</a> and <a href="http://wonga.io">Andrew Wong</a>
   </div>
 </div>
 
@@ -160,13 +160,14 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <div id="summary"></div>
 
 <script id="summary-template" type="text/x-handlebars-template">
-  <h1 id="summary-title">Off</h1>
+  <h1 id="summary-title">M U T E D</h1>
+  <p style="color:white">Videos from the most recent past:</i></p>
   <div class='thumb-container'>
     {{#each videos}}
       <div class="thumb">
         <img src="http://img.youtube.com/vi/{{ id }}/0.jpg">
-        <p class="viewCount">{{ viewCount }} views</p>
-        <p class="uploaded {{uploaded-class}} ">{{ uploaded }}</p>
+        <p class="viewCount">{{ viewCount }} views on YouTube</p>
+        <p class="Uploaded {{uploaded-class}} ">{{ uploaded }}</p>
         <p class="action">{{ action }}</p>
       </div>
      {{/each}}

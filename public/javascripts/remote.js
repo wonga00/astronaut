@@ -73,7 +73,7 @@ $(document).ready(function() {
 
 	//this is the controller for the buttons
   $("#power-button").click(function() {
-    powerPressed();
+    mutePressed();
   });
 	$("#back").click(function() {
 		backPressed();
@@ -110,24 +110,28 @@ $(document).ready(function() {
 	//this is the listener for keypresses
 	$('body').keydown(function(event) {
 		console.log(event.which);
-        if (event.which == 77) { //detect 'm'
-          powerPressed();
-        }
-        else if (event.which == 37) { // detect 'left'
-          goFullscreen('smooth');
-        	backPressed();
-        }
-        else if (event.which == 40) { //detect 'down'
-          goFullscreen('smooth');
-          event.preventDefault();
-        	holdPressed();
-        }
-        else if (event.which == 39) { //detect 'right'
-        	livePressed();
-        } else if (event.which == 27) {
-          scrollDown();
-        }
-
+      if (event.which == 32) { // 'space'
+        mutePressed();
+      }
+      else if (event.which == 37) { // 'left'
+        goFullscreen('smooth');
+      	backPressed();
+        setMuted(false);
+      }
+      else if (event.which == 40) { // 'down'
+        goFullscreen('smooth');
+        event.preventDefault();
+      	holdPressed();
+        setMuted(false);
+      }
+      else if (event.which == 39) { // 'right'
+      	livePressed();
+        goFullscreen('smooth');
+        setMuted(false);
+      } else if (event.which == 27) { // 'escape'
+        scrollDown();
+        setMuted(false);
+      }
     });
 });
 
@@ -178,38 +182,57 @@ function buildSummary() {
   $('#summary').html(html);
 }
 
-function powerPressed() {
-  if (power==1) {
+// function powerPressed() {
+//   if (power==1) {
+//     $("#power-button").addClass("powered-down");
+//     SmoothPlayer.setRecording(false);
+//     buildSummary();
+//     $('#summary').css('display', 'inline');
+//     mutePressed();
+//     power=0;
+//   }
+//   else {
+//     $("#power-button").removeClass("powered-down");
+//     $('#summary').css('display', 'none');
+//     SmoothPlayer.setRecording(true);
+//     mutePressed();
+//     power=1;
+//   }
+// }
+
+function setMuted(muted) {
+  if (muted) {
     $("#power-button").addClass("powered-down");
     SmoothPlayer.setRecording(false);
     buildSummary();
     $('#summary').css('display', 'inline');
-    mutePressed();
+
+    $("#mute").html("SOUND");
+    $("#mute").css({"text-decoration":"line-through"});
+    $("#control-status-message").addClass("muted");
+    SmoothPlayer.mute();
+    mute=1;
     power=0;
-  }
-  else {
+  } else {
     $("#power-button").removeClass("powered-down");
     $('#summary').css('display', 'none');
     SmoothPlayer.setRecording(true);
-    mutePressed();
+
+    $("#mute").html("((( SOUND )))");
+    $("#mute").css({"text-decoration":"none"});
+    $("#control-status-message").removeClass("muted");
+    SmoothPlayer.unMute();
+    mute=0;
     power=1;
   }
 }
 
 function mutePressed() {
 	if (mute==0) {
-		$("#mute").html("SOUND");
-		$("#mute").css({"text-decoration":"line-through"});
-    $("#control-status-message").addClass("muted");
-		SmoothPlayer.mute();
-		mute=1;
+    setMuted(true);
 	}
 	else {
-		$("#mute").html("((( SOUND )))");
-		$("#mute").css({"text-decoration":"none"});
-    $("#control-status-message").removeClass("muted");
-		SmoothPlayer.unMute();
-		mute=0;
+    setMuted(false);
 	}
 }
 
