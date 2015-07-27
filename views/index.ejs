@@ -47,12 +47,19 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
   right: 0px;
   left: 0px;
   z-index: 3;
-  text-align: center;
 }
 #summary h1 {
-  color: white;
-  text-transform: uppercase;
-  font-size: 19pt;
+  color: rgba(255,255,255,0.8);
+  font-size: 18pt;
+  font-weight: 300;
+  padding: 100px 0 50px 0;
+  width: 600px;
+  margin: 0 auto;
+}
+#summary h2 {
+  color: rgba(255,255,255,0.6);
+  font-size: 12pt;
+  font-weight: 500;
   padding: 50px;
 }
 #summary ul {
@@ -61,19 +68,32 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
   padding-right: 20px;
 }
 
-.thumb-container {
-  display: inline-block;
-  margin: auto;
+#summary p {
+  line-height: 28px;
+  margin: 0 auto;
+  text-align:left;
+  width:600px;
+  color:rgba(255,255,255,0.5);
 }
 
-.thumb {
+#summary p code {
+  font-size: 16px;
+  color:white;
+}
+
+#summary .thumb-container {
+  margin-top: 40px;
+  text-align:center;
+}
+
+#summary .thumb {
   position: relative;
   width: 160px;
   height: 200px;
   display: inline-block;
   margin: 20px;
 }
-.thumb img {
+#summary .thumb img {
     width: 100%;
     margin: 0px;
     padding: 0px;
@@ -81,24 +101,19 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    margin-bottom: 13px;
+    margin-bottom: 6px;
 }
-.thumb p {
-    color: white;
-    font-size: 12;
-    text-transform: uppercase;
-    margin: 0;
-    text-align: left;
-    padding-bottom: 2px;
+#summary .thumb p {
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  margin: 0;
+  text-align: center;
+  width:160px;
 }
-.thumb .viewCount {
-  color: white;
-}
-.thumb .uploaded {
-  color: white;
-}
-.thumb .action {
-  color: white;
+
+#summary .thumb p code {
+  font-size: 12px;
+  color:white;
 }
 
 </style>
@@ -204,14 +219,15 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
     }
   </script>
 <script id="summary-template" type="text/x-handlebars-template">
-  <h1 id="summary-title">M U T E D</h1>
-  <p style="color:white">Videos from the most recent past:</i></p>
+  <h1 id="summary-title">You are muted.</h1>
+    <p>Below are recently played videos, for your convenience.</p>
+    <p>To return to regular viewing, press the <code>spacebar</code>.</p>
+    <p>Remember, <code>down</code> to hold, <code>left</code> to go back, and <code>right</code> to resume the Live Stream.</p>
   <div class='thumb-container'>
     {{#each videos}}
       <div class="thumb">
         <img src="http://img.youtube.com/vi/{{ id }}/0.jpg">
-        <p class="viewCount">{{ viewCount }} views on YouTube</p>
-        <p class="Uploaded {{uploaded-class}} ">{{ uploaded }}</p>
+        <p class="Uploaded {{uploaded-class}} ">Uploaded  <code>{{ uploaded }}</code></p>
         <p class="action">{{ action }}</p>
       </div>
      {{/each}}
