@@ -1,0 +1,118 @@
+<html>
+<head>
+<title>Astronaut</title>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<style>
+body {
+    position: relative;
+    background-color: #eee;
+}
+
+#smooth-container {
+/*    margin: auto;
+    margin-top: 50px;
+    width: 320px;
+    height: 240px;*/
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+}
+
+#player {
+/*    display:relative;
+    background-color:@primary-accent;
+    width: 320px;
+    height: 240px;
+    overflow: hidden;*/
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+</style>
+<body>
+<div id="smooth-container">
+    <div id="player"></div>
+</div>
+<script>
+
+    function SmoothPlayer(div, args) {
+        var self = {};
+
+        self.play = function(video) {
+            console.log('playing', video);
+            self.p1.loadVideoById(video);
+        }
+
+        self.p1 = new YT.Player(div, {
+            height: args.height,
+            width: args.width,
+            playerVars: {
+                // controls: 0,
+                // showinfo: 0
+            },
+            events: {
+                'onReady': args.onReady
+                // 'onStateChange': onPlayerStateChange
+            }
+        });
+
+        self.ready = false;
+
+        return self;
+    }
+
+    // 2. This code loads the IFrame Player API code asynchronously.
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // 3. This function creates an <iframe> (and YouTube player)
+    //    after the API code downloads.
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new SmoothPlayer('player', {
+            width: '320',
+            height: '240',
+            onReady: function(event) {
+              player.ready = true;
+            }
+        });
+    }
+
+
+function initSocket() {
+    var socket = io.connect();
+    //establish a command pattern on the server to parse out messages
+    socket.on('video', function(data) {
+        console.log('received', data.video.id);
+        if (player && player.ready) {
+            player.play(data.video.id);
+        }
+    });
+}
+
+initSocket();
+</script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-37464803-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>

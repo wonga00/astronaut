@@ -84,6 +84,10 @@ app.get('/grid', function(req, res) {
   });
 });
 
+app.get('/m', function(req, res) {
+  res.render('mobile.ejs', {});
+});
+
 server.listen(process.env['app_port'] || 3000);
 console.log("Astronaut server listening on port %d in %s mode", server.address().port, app.settings.env);
 
