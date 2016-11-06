@@ -12,7 +12,7 @@ var csv = require('csv')
   , youtube = require('./youtube');
 
 var CRAWL_ENABLED = true;
-var VIDEO_INTERVAL = 5000;
+var VIDEO_INTERVAL = 8000;
 var REFRESH_INTERVAL = 86400000 //one day
 var DATA_FILE = __dirname + '/data.txt';
 var sendVideoTimer = 0;
