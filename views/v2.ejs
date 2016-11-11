@@ -59,6 +59,7 @@ body {
   height: 540px;
   opacity: 0;
   text-align: center;
+
 }
 
 #player {
@@ -66,6 +67,7 @@ body {
   background-color:@primary-accent;
   width: 960px;
   height: 540px;
+  pointer-events: none;
   /*overflow: hidden;*/
 }
 
@@ -88,6 +90,7 @@ body {
     border-radius: 50%;
     margin: auto;
     margin-top: 20px;
+    display:none;
 }
 
 .hold {
@@ -195,6 +198,7 @@ video#bgvid {
                     //     i = (i + 1) % videos.length;
                     //     sp.play(videos[i]);
                     // }, 8000);
+                    sp.mute();
                 }
             });
     }
@@ -266,7 +270,7 @@ video#bgvid {
     //this is the listener for keypresses
     $('body').keydown(function(event) {
       if (event.which == 32) { // 'space'
-        montageMode(!inMontageMode);
+        // montageMode(!inMontageMode);
       }
       else if (event.which == 37) { // 'left'
         back();
@@ -282,6 +286,7 @@ video#bgvid {
     $('#go-btn').click(function() {
         $('#summary').animate({opacity: 0}, 400, function() {
             $(this).css("display", "none");
+            montageMode(!inMontageMode);
         });
     });
 
