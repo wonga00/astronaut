@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="/javascripts/smoothplayer3.js"></script>
+<link rel="stylesheet/less" type="text/css" href="/stylesheets/bootstrap.min.css" />
+<link href='http://fonts.googleapis.com/css?family=Roboto:500,300' rel='stylesheet' type='text/css'>
+<style>
+body {
+  /*position: relative;*/
+  background-color: #000;
+}
+#mask {
+  position: fixed;
+  background: rgba(30,35,40,0.9);
+  display: inline;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  /*z-index: 0;*/
+}
+#summary {
+  font-family: 'Roboto', sans-serif;
+  position: fixed;
+  background: rgba(30,35,40,0.9);
+  display: inline-block;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 3;
+
+    color: rgba(255,255,255,0.8);
+
+}
+
+#summary h1 {
+    font-size: 30pt;
+    font-weight: 300;
+    text-transform: uppercase;
+    margin-top: -48px;
+}
+#summary p {
+    font-size: 14px;
+    line-height: 23px;
+    font-weight: 100;
+    text-align: justify;
+}
+
+#smooth-container {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 960px;
+  height: 540px;
+  opacity: 0;
+  text-align: center;
+}
+
+#player {
+  display:relative;
+  background-color:@primary-accent;
+  width: 960px;
+  height: 540px;
+  /*overflow: hidden;*/
+}
+
+.message {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    width: 400px;
+    height: 400px;
+}
+
+#control-btn {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #eee;
+    border-radius: 50%;
+    margin: auto;
+    margin-top: 20px;
+}
+
+.hold {
+    background: #fdd;
+}
+
+video#bgvid {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    background: url(polina.jpg) no-repeat;
+    background-size: cover;
+}
+
+.message a {
+    margin-top: 20px;
+    display: inline-block;
+    font-size: 18px;
+    border: 1px solid #EEE;
+    padding: 10px;
+    color: #EEE;
+    text-decoration: none;
+}
+</style>
+<body>
+<!-- <video playsinline autoplay muted loop poster="polina.jpg" id="bgvid"> -->
+    <!-- <source src="images/polina.webm" type="video/webm"> -->
+    <!-- <source src="images/earth.mp4" type="video/mp4"> -->
+<!-- </video> -->
+<!-- <div id="mask"></div> -->
+<audio src="images/debussy.mp4#t=10,1000" preload="auto"></audio>
+<div id="smooth-container">
+    <div id="player"></div>
+    <div id="control-btn"></div>
+</div>
+
+<div id="summary">
+<div class="message">
+    <h1>Astronaut</h1>
+    <p>Today, you are an astronaut. You are floating in inner space 100 miles above the surface of Earth. You peer through your telescope and this is what you see. You are people watching. These are fleeting moments.</p>
+
+    <p>These videos come from YouTube. They were uploaded some time in the past week and have titles like <code>DSC</code> <code>1234</code> and <code>IMG</code> <code>4321</code>. Most have fewer than five (5) views. They are unnamed, unedited, and unseen by anyone but you.</p>
+
+    <p>The controls are simple. If you like a video and wish it not to switch, you can press down <span class="inline-icon hold"></span>. If a video switches before you've a chance to press hold, you can press the back <span class="inline-icon back"></span> which will return to and hold the previous video. You can return to the live stream by pressing right <span class="inline-icon live"></span>.</p>
+
+    <a class="button" id="go-btn" href="#">GO</a>
+</div>
+</div>
+<script>
+    var tag = document.createElement('script');
+
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    var sp,
+        videos = [
+            'q2XBK_PZgWY',
+            'RQjdcyRwwP8',
+            'P9bcm3uT0NY',
+            'I4WgpPg9EcA',
+            'UOZVb91HwrQ',
+            'rlZKRgtI3bs',
+            'ovAjtEWUEGc',
+            'BzVuPNSzP1E',
+            'Y1fqjCxkdI8',
+            'R3HILwnTfTc',
+            '0gip2UCMc5o',
+            '6G8rpU3jZCw',
+            'rNZeQ1UXP7Y',
+            'DHa7hX-43a4',
+            'LpeRgRl8HG4',
+            '4Fs9rj9uLyk',
+            'NnWE6QMczfQ',
+            'Lqbya6dBfDA',
+            'QRrAGrxDYCE',
+            'DjaZ2LKwhfI'
+        ],
+        i = 0;
+
+    function onYouTubeIframeAPIReady() {
+        sp = new SmoothPlayer('player', {
+                width: '960px',
+                height: '540px',
+                onStart: function() {
+                    console.log('started');
+                    $("#smooth-container").animate({opacity: 1}, 2000);
+                },
+                onResume: function() {
+                    console.log('resumed');
+                    refreshControlButton();
+                },
+                onReady: function() {
+                    // sp.play(videos[i]);
+                    // window.setInterval(function() {
+                    //     i = (i + 1) % videos.length;
+                    //     sp.play(videos[i]);
+                    // }, 8000);
+                }
+            });
+    }
+
+
+    // we need a circle that is bound do the player state, that is responsive
+    // to both keyboard and mouse hits
+
+
+    function hold() {
+        console.log('hold');
+        sp.hold();
+        // render ui
+        refreshControlButton();
+    }
+    function back() {
+        console.log('back');
+        sp.goBack();
+        refreshControlButton();
+    }
+    function resume() {
+        console.log('resume');
+        sp.resume();
+        refreshControlButton();
+    }
+
+    function refreshControlButton() {
+        var playerState = sp.playerState();
+        console.log('control btn clicked on state', playerState);
+        if (playerState === 'hold') {
+            $('#control-btn').toggleClass('hold', true);
+        } else if (playerState === 'back') {
+            $('#control-btn').toggleClass('hold', true);
+        } else {
+            $('#control-btn').toggleClass('hold', false);
+        }
+    }
+
+    $('#control-btn').click(function() {
+        console.log('clicked');
+        var playerState = sp.playerState();
+        console.log('player state', playerState)
+        if (playerState =='live') {
+            console.log('holding...');
+            hold();
+        } else {
+            resume();
+        }
+    });
+
+    var inMontageMode = false;
+    function montageMode(on) {
+        console.log('toggling montage mode', on);
+        var a = document.getElementsByTagName("audio")[0];
+        if (on) {
+            $('#control-btn').css('display', 'none');
+            a.currentTime = 8;
+            a.play();
+            sp.resume();
+            sp.mute();
+        } else {
+            $('#control-btn').css('display', 'inline-block');
+            a.pause();
+            sp.unMute();
+        }
+        inMontageMode = on;
+    }
+
+    //this is the listener for keypresses
+    $('body').keydown(function(event) {
+      if (event.which == 32) { // 'space'
+        montageMode(!inMontageMode);
+      }
+      else if (event.which == 37) { // 'left'
+        back();
+      }
+      else if (event.which == 40) { // 'down'
+        hold();
+      }
+      else if (event.which == 39) { // 'right'
+        resume();
+      }
+    });
+
+    $('#go-btn').click(function() {
+        $('#summary').animate({opacity: 0}, 400, function() {
+            $(this).css("display", "none");
+        });
+    });
+
+    function initSocket() {
+        var socket = io.connect();
+        //establish a command pattern on the server to parse out messages
+        socket.on('video', function(data) {
+            console.log('received', data.video.id);
+            if (sp && sp.isReady()) {
+                sp.play(data.video.id);
+            }
+        });
+    }
+
+    initSocket();
+</script>
+</body>
+</html>

@@ -84,6 +84,10 @@ app.get('/grid', function(req, res) {
   });
 });
 
+app.get('/v2', function(req, res) {
+  res.render('v2.ejs', {});
+});
+
 app.get('/m', function(req, res) {
   res.render('mobile.ejs', {});
 });
