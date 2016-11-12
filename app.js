@@ -47,12 +47,12 @@ io.sockets.on('connection', function(socket) {
 
 /* ---------- ROUTES ------------ */
 
-app.get('/',  function(req, res){
-  res.render('index.ejs', {
-    host: "http://astronaut.io",
-    vid: ""
-  });
-});
+// app.get('/',  function(req, res){
+//   res.render('index.ejs', {
+//     host: "http://astronaut.io",
+//     vid: ""
+//   });
+// });
 
 app.get('/v/:vidId', function(req, res) {
   var vidId = req.params.vidId;
@@ -84,7 +84,7 @@ app.get('/grid', function(req, res) {
   });
 });
 
-app.get('/v2', function(req, res) {
+app.get('/', function(req, res) {
   res.render('v2.ejs', {});
 });
 
