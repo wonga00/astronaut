@@ -23,7 +23,9 @@ var videoCallback;
 
 var adIndex = 0;
 // these are the interstitual videos
-var ads = ["Ip2ZGND1I9Q"];
+// var ads = ["Ip2ZGND1I9Q"];
+var ads = [];
+
 // enable this play list to bring in playlist videos as ads
 // var adPlayListId = 'PL0boS0-jubPp2EZC6tUFJKCaqMHCaOdL9';
 var lastAdTime = new Date();
