@@ -12,13 +12,12 @@ body {
 }
 #mask {
   position: fixed;
-  background: rgba(30,35,40,0.9);
+  background: rgba(30,35,40,0.5);
   display: inline;
   top: 0px;
   bottom: 0px;
   right: 0px;
   left: 0px;
-  /*z-index: 0;*/
 }
 #summary {
   font-family: 'Roboto', sans-serif;
@@ -30,9 +29,7 @@ body {
   right: 0px;
   left: 0px;
   z-index: 3;
-
-    color: rgba(255,255,255,0.8);
-
+  color: rgba(255,255,255,0.8);
 }
 
 #summary h1 {
@@ -46,6 +43,9 @@ body {
     line-height: 23px;
     font-weight: 100;
     text-align: justify;
+}
+#summary p.subdued {
+    opacity:0.5;
 }
 
 #smooth-container {
@@ -83,6 +83,22 @@ body {
     height: 400px;
 }
 
+.message a {
+    margin-top: 15px;
+    display: inline-block;
+    font-size: 18px;
+    border: 1px solid #EEE;
+    padding: 16px 18px;
+    color: #EEE;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.dead {
+  display: none;
+}
+
 #control-btn {
     width: 20px;
     height: 20px;
@@ -90,11 +106,12 @@ body {
     border-radius: 50%;
     margin: auto;
     margin-top: 20px;
-    display:none;
+    /*display:none;*/
+    cursor: pointer;
 }
 
 .hold {
-    background: #fdd;
+    background: rgba(255, 180, 180, 0.6);
 }
 
 video#bgvid {
@@ -114,22 +131,13 @@ video#bgvid {
     background-size: cover;
 }
 
-.message a {
-    margin-top: 20px;
-    display: inline-block;
-    font-size: 18px;
-    border: 1px solid #EEE;
-    padding: 10px;
-    color: #EEE;
-    text-decoration: none;
-}
 </style>
 <body>
 <video playsinline autoplay muted loop poster="polina.jpg" id="bgvid">
     <source src="images/earth.mp4#t=50" type="video/mp4">
 </video>
-<!-- <div id="mask"></div> -->
-<audio src="audio/debussy.mp4" preload="auto"></audio>
+<div id="mask"></div>
+<audio loop src="audio/debussy.mp4" preload="auto"></audio>
 <div id="smooth-container">
     <div id="player"></div>
     <div id="control-btn"></div>
@@ -138,11 +146,13 @@ video#bgvid {
 <div id="summary">
 <div class="message">
     <h1>Astronaut</h1>
-    <p>Today, you are an astronaut. You are floating in inner space 100 miles above the surface of Earth. You peer through your telescope and this is what you see. You are people watching. These are fleeting moments.</p>
+    <p>Today, you are an Astronaut. You are floating in inner space 100 miles above the surface of Earth. You peer through your window and this is what you see. You are people watching. These are fleeting moments.</p>
 
-    <p>These videos come from YouTube. They were uploaded some time in the past week and have titles like <code>DSC</code> <code>1234</code> and <code>IMG</code> <code>4321</code>. Most have fewer than five (5) views. They are unnamed, unedited, and unseen by anyone but you.</p>
+    <p>These videos come from YouTube. They were uploaded in the last week and have titles like <code>DSC 1234</code> and <code>IMG 4321</code>. They have almost zero previous views. They are unnamed, unedited, and unseen by anyone but YOU.</p>
 
-    <p>The controls are simple. If you like a video and wish it not to switch, you can press down <span class="inline-icon hold"></span>. If a video switches before you've a chance to press hold, you can press the back <span class="inline-icon back"></span> which will return to and hold the previous video. You can return to the live stream by pressing right <span class="inline-icon live"></span>.</p>
+    <p>The Astronaut video stream starts when you press <code>GO</code>. Videos change periodically. If you wish to linger, tap the button.</p>
+
+    <p class="subued dead">The controls are simple. If you like a video and wish it not to switch, you can press down <span class="inline-icon hold"></span>. If a video switches before you've a chance to press hold, you can press the back <span class="inline-icon back"></span> which will return to and hold the previous video. You can return to the live stream by pressing right <span class="inline-icon live"></span>.</p>
 
     <a class="button" id="go-btn" href="#">GO</a>
 </div>
@@ -183,9 +193,12 @@ video#bgvid {
         sp = new SmoothPlayer('player', {
                 width: '960px',
                 height: '540px',
+                // width: '300px',
+                // height: '533px',
                 onStart: function() {
                     console.log('started');
                     $("#smooth-container").animate({opacity: 1}, 2000);
+                    $('#summary a').animate({opacity: 1}, 1000);
                 },
                 onResume: function() {
                     console.log('resumed');
@@ -198,6 +211,7 @@ video#bgvid {
                     //     sp.play(videos[i]);
                     // }, 8000);
                     sp.mute();
+                    toggleSummary(true);
                 }
             });
     }
@@ -268,26 +282,41 @@ video#bgvid {
 
     //this is the listener for keypresses
     $('body').keydown(function(event) {
-      // if (event.which == 32) { // 'space'
-      //   // montageMode(!inMontageMode);
-      // }
-      // else if (event.which == 37) { // 'left'
-      //   back();
-      // }
-      // else if (event.which == 40) { // 'down'
-      //   hold();
-      // }
-      // else if (event.which == 39) { // 'right'
-      //   resume();
-      // }
+      if (event.which == 32) { // 'space'
+        montageMode(!inMontageMode);
+      }
+      else if (event.which == 37) { // 'left'
+        back();
+      }
+      else if (event.which == 40) { // 'down'
+        hold();
+      }
+      else if (event.which == 39) { // 'right'
+        resume();
+      } else if (event.which == 27) { // 'escape'
+        console.log('toggleSummary');
+        toggleSummary(true);
+      }
     });
 
+
+    function toggleSummary(on) {
+      if (on) {
+        $('#summary').css({display: "inline-block", opacity: 1});
+        sp.mute();
+        $('#control-btn').css('display', 'none');
+      } else {
+        $('#summary').css("display", "none");
+        sp.unMute();
+        $('#control-btn').css('display', 'inline-block');
+      }
+    }
     $('#go-btn').click(function() {
         $('#summary').animate({opacity: 0}, 400, function() {
-            $(this).css("display", "none");
-            montageMode(!inMontageMode);
+            toggleSummary(false);
         });
     });
+
 
     function initSocket() {
         var socket = io.connect();
