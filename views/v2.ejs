@@ -13,33 +13,33 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <link rel="stylesheet/less" type="text/css" href="/stylesheets/bootstrap.min.css" />
 <link rel="shortcut icon" href="/favicon.ico">
 <link href='http://fonts.googleapis.com/css?family=Roboto:500,300' rel='stylesheet' type='text/css'>
+
 <style>
+
 body {
-  /*position: relative;*/
-  background-color: #000;
+    background-color: #000;
 }
 #mask {
-  position: fixed;
-  background: rgba(30,35,40,0.5);
-  display: inline;
-  top: 0px;
-  bottom: 0px;
-  right: 0px;
-  left: 0px;
+    position: fixed;
+    background: rgba(30, 35, 40, 0.5);
+    display: inline;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
 }
 #summary {
-  font-family: 'Roboto', sans-serif;
-  position: fixed;
-  background: rgba(30,35,40,0.9);
-  display: inline-block;
-  top: 0px;
-  bottom: 0px;
-  right: 0px;
-  left: 0px;
-  z-index: 3;
-  color: rgba(255,255,255,0.8);
+    font-family: 'Roboto', sans-serif;
+    position: fixed;
+    background: rgba(30, 35, 40, 0.9);
+    display: inline-block;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    z-index: 3;
+    color: rgba(255, 255, 255, 0.8);
 }
-
 #summary h1 {
     font-size: 30pt;
     font-weight: 300;
@@ -53,32 +53,28 @@ body {
     text-align: justify;
 }
 #summary p.subdued {
-    opacity:0.5;
+    opacity: 0.5;
 }
-
 #smooth-container {
-  position: absolute;
-  margin: auto;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  width: 960px;
-  height: 540px;
-  opacity: 0;
-  text-align: center;
-
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 960px;
+    height: 540px;
+    opacity: 0;
+    text-align: center;
 }
-
 #player {
-  display:relative;
-  background-color:@primary-accent;
-  width: 960px;
-  height: 540px;
-  pointer-events: none;
-  /*overflow: hidden;*/
+    display: relative;
+    background-color: @primary-accent;
+    width: 960px;
+    height: 540px;
+    pointer-events: none;
+    /*overflow: hidden;*/
 }
-
 .message {
     position: absolute;
     margin: auto;
@@ -90,7 +86,6 @@ body {
     width: 400px;
     height: 400px;
 }
-
 .message a {
     margin-top: 15px;
     display: inline-block;
@@ -102,11 +97,9 @@ body {
     cursor: pointer;
     opacity: 0;
 }
-
 .dead {
-  display: none;
+    display: none;
 }
-
 #control-btn {
     width: 20px;
     height: 20px;
@@ -115,13 +108,12 @@ body {
     margin: auto;
     margin-top: 20px;
     /*display:none;*/
+
     cursor: pointer;
 }
-
 .hold {
     background: rgba(255, 180, 180, 0.6);
 }
-
 video#bgvid {
     position: fixed;
     top: 50%;
@@ -135,11 +127,13 @@ video#bgvid {
     -moz-transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);
-    background: url(polina.jpg) no-repeat;
+    background: url(earth.jpg) no-repeat;
     background-size: cover;
 }
 
 </style>
+
+
 <body>
 <video playsinline autoplay="" muted loop poster="earth.jpg" id="bgvid">
     <source src="images/earth.mp4#t=50,283" type="video/mp4">
@@ -202,54 +196,46 @@ video#bgvid {
         sp = new SmoothPlayer('player', {
                 width: '960px',
                 height: '540px',
-                // width: '300px',
-                // height: '533px',
                 onStart: function() {
-                    console.log('started');
                     $("#smooth-container").animate({opacity: 1}, 2000);
                     $('#summary a').animate({opacity: 1}, 1000);
                 },
                 onResume: function() {
-                    console.log('resumed');
                     refreshControlButton();
                 },
                 onReady: function() {
+                    // debug
                     // sp.play(videos[i]);
                     // window.setInterval(function() {
                     //     i = (i + 1) % videos.length;
                     //     sp.play(videos[i]);
                     // }, 8000);
+                    var socket = io.connect();
                     sp.mute();
                     toggleSummary(true);
+                    socket.on('video', function(data) {
+                        console.log('received', data.video.id);
+                        sp.play(data.video.id);
+                    });
                 }
             });
     }
 
-
-    // we need a circle that is bound do the player state, that is responsive
-    // to both keyboard and mouse hits
-
-
     function hold() {
-        console.log('hold');
         sp.hold();
-        // render ui
         refreshControlButton();
     }
     function back() {
-        console.log('back');
         sp.goBack();
         refreshControlButton();
     }
     function resume() {
-        console.log('resume');
         sp.resume();
         refreshControlButton();
     }
 
     function refreshControlButton() {
         var playerState = sp.playerState();
-        console.log('control btn clicked on state', playerState);
         if (playerState === 'hold') {
             $('#control-btn').toggleClass('hold', true);
         } else if (playerState === 'back') {
@@ -260,20 +246,15 @@ video#bgvid {
     }
 
     $('#control-btn').click(function() {
-        console.log('clicked');
-        var playerState = sp.playerState();
-        console.log('player state', playerState)
-        if (playerState =='live') {
-            console.log('holding...');
+        if (sp.playerState() =='live') {
             hold();
         } else {
             resume();
         }
     });
 
-    var inMontageMode = false;
-    function montageMode(on) {
-        console.log('toggling montage mode', on);
+    var inTheaterMode = false;
+    function theaterMode(on) {
         var a = document.getElementsByTagName("audio")[0];
         if (on) {
             $('#control-btn').css('display', 'none');
@@ -286,59 +267,46 @@ video#bgvid {
             a.pause();
             sp.unMute();
         }
-        inMontageMode = on;
+        inTheaterMode = on;
     }
 
     //this is the listener for keypresses
     $('body').keydown(function(event) {
-      if (event.which == 32) { // 'space'
-        montageMode(!inMontageMode);
-      }
-      else if (event.which == 37) { // 'left'
-        back();
-      }
-      else if (event.which == 40) { // 'down'
-        hold();
-      }
-      else if (event.which == 39) { // 'right'
-        resume();
-      } else if (event.which == 27) { // 'escape'
-        console.log('toggleSummary');
-        toggleSummary(true);
-      }
+        if (event.which == 32) { // 'space'
+            theaterMode(!inTheaterMode);
+        }
+        else if (event.which == 37) { // 'left'
+            back();
+        }
+        else if (event.which == 40) { // 'down'
+            hold();
+        }
+        else if (event.which == 39) { // 'right'
+            resume();
+        } else if (event.which == 27) { // 'escape'
+            toggleSummary(true);
+        }
     });
 
 
     function toggleSummary(on) {
-      if (on) {
-        $('#summary').css({display: "inline-block", opacity: 1});
-        sp.mute();
-        $('#control-btn').css('display', 'none');
-      } else {
-        $('#summary').css("display", "none");
-        sp.unMute();
-        $('#control-btn').css('display', 'inline-block');
-      }
+        if (on) {
+            $('#summary').css({display: "inline-block", opacity: 1});
+            sp.mute();
+            $('#control-btn').css('display', 'none');
+        } else {
+            $('#summary').css("display", "none");
+            sp.unMute();
+            $('#control-btn').css('display', 'inline-block');
+        }
     }
+
     $('#go-btn').click(function() {
         $('#summary').animate({opacity: 0}, 400, function() {
             toggleSummary(false);
         });
     });
 
-
-    function initSocket() {
-        var socket = io.connect();
-        //establish a command pattern on the server to parse out messages
-        socket.on('video', function(data) {
-            console.log('received', data.video.id);
-            if (sp && sp.isReady()) {
-                sp.play(data.video.id);
-            }
-        });
-    }
-
-    initSocket();
 </script>
 
 <script type="text/javascript">

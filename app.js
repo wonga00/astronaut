@@ -37,7 +37,7 @@ app.configure('production', function(){
 /* ---------- REAL-TIME ---------- */
 
 io.sockets.on('connection', function(socket) {
-    socket.emit('vid', videoStream.currentVid());
+    socket.emit('video', videoStream.currentVid());
     io.sockets.emit('num_viewers', io.sockets.clients().length);
     socket.on("disconnect", function() {
       io.sockets.emit('num_viewers', io.sockets.clients().length - 1);
