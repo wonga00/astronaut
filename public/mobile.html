@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0"/> <!--320-->
+<style>
+body {
+  background-color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+#box {
+    width: 960px;
+    height: 480px;
+    background: #eee;
+    text-align: center;
+    margin: auto;
+    /*margin-top: 100px;*/
+    padding: 0;
+}
+
+@media screen and (max-device-width: 960px) {
+    .desktop-only {
+        display: none;
+    }
+    .mobile-only {
+        display: block;
+    }
+    #box {
+        width: 200px;
+    }
+}
+@media screen and (min-width: 961px) {
+    .desktop-only {
+        display: block;
+    }
+    .mobile-only {
+        display: none;
+    }
+}
+</style>
+<body>
+
+<div id="box">
+    <p class="desktop-only">Welcome to a desktop friendly box</p>
+    <p class="mobile-only">Sorry this page sucks on mobile. Open it on your computer</p>
+</div>
+
+</script>
+</body>
+</html>

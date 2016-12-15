@@ -65,10 +65,10 @@ function SmoothPlayer(div, args) {
                 }
             }
             //this happens if someone presses the YouTube logo and gets redirected
-            if (state == YT.PlayerState.CUED) {
-                console.log('state change cued');
-                player.playVideo();
-            }
+            // if (state == YT.PlayerState.CUED) {
+            //     console.log('state change cued');
+            //     player.playVideo();
+            // }
         }
     }
 
@@ -127,6 +127,18 @@ function SmoothPlayer(div, args) {
         if (!_ready) {
             return false;
         }
+
+        if (_firstVideo) {
+            // warmup all the players
+            console.log('warming up');
+            _buffering.loadVideoById('q2XBK_PZgWY');
+            _buffering.stopVideo();
+            _current.loadVideoById('q2XBK_PZgWY');
+            _current.stopVideo();
+            _back.loadVideoById('q2XBK_PZgWY');
+            _back.stopVideo();
+        }
+
         console.log("Playing " + video + " in " + _buffering);
         if (seekTime) {
             _buffering.loadVideoById(video, seekTime);

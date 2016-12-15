@@ -192,13 +192,15 @@ video#bgvid {
         ],
         i = 0;
 
+    $('#summary a').animate({opacity: 1}, 1000);
+
     function onYouTubeIframeAPIReady() {
         sp = new SmoothPlayer('player', {
                 width: '960px',
                 height: '540px',
                 onStart: function() {
                     $("#smooth-container").animate({opacity: 1}, 2000);
-                    $('#summary a').animate({opacity: 1}, 1000);
+                    // $('#summary a').animate({opacity: 1}, 1000);
                 },
                 onResume: function() {
                     refreshControlButton();
@@ -210,13 +212,13 @@ video#bgvid {
                     //     i = (i + 1) % videos.length;
                     //     sp.play(videos[i]);
                     // }, 8000);
-                    var socket = io.connect();
-                    sp.mute();
+                    // var socket = io.connect();
+                    // sp.mute();
                     toggleSummary(true);
-                    socket.on('video', function(data) {
-                        console.log('received', data.video.id);
-                        sp.play(data.video.id);
-                    });
+                    // socket.on('video', function(data) {
+                    //     console.log('received', data.video.id);
+                    //     sp.play(data.video.id);
+                    // });
                 }
             });
     }
@@ -304,6 +306,11 @@ video#bgvid {
     $('#go-btn').click(function() {
         $('#summary').animate({opacity: 0}, 400, function() {
             toggleSummary(false);
+            var socket = io.connect();
+            socket.on('video', function(data) {
+                console.log('received', data.video.id);
+                sp.play(data.video.id);
+            });
         });
     });
 
