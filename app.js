@@ -3,6 +3,8 @@
  * Module dependencies.
  */
 
+require('log-timestamp');
+
 var express = require('express')
   , app = express()
   , http = require('http')
@@ -25,11 +27,13 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  io.set('log level', '3'); // debug level
   videoStream.setCrawlEnabled(false);
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler());
+  io.set('log level', '1'); // warn level
   videoStream.setCrawlEnabled(true);
 });
 
@@ -46,26 +50,6 @@ io.sockets.on('connection', function(socket) {
 
 
 /* ---------- ROUTES ------------ */
-
-// app.get('/',  function(req, res){
-//   res.render('index.ejs', {
-//     host: "http://astronaut.io",
-//     vid: ""
-//   });
-// });
-
-app.get('/v/:vidId', function(req, res) {
-  var vidId = req.params.vidId;
-  //use render here
-  res.render('index.ejs', {
-    host: "http://astronaut.io",
-    vid: {
-      id: vidId,
-      viewCount: 1000,
-      uploaded: '2015-01-01T15:29:36Z'
-    }
-  });
-});
 
 app.get('/z', function(req, res) {
   res.render('admin.ejs', {
@@ -88,13 +72,10 @@ app.get('/', function(req, res) {
   res.render('v2.ejs', {});
 });
 
-app.get('/m', function(req, res) {
-  res.render('mobile.ejs', {});
-});
-
 server.listen(process.env['app_port'] || 3000);
 console.log("Astronaut server listening on port %d in %s mode", server.address().port, app.settings.env);
 
 videoStream.start(function(data) {
+  console.log("emitting video", data);
   io.sockets.emit('video', data);
 });
