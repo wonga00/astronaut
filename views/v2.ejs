@@ -135,7 +135,7 @@ video#bgvid {
 
 <body>
 <video playsinline autoplay="" muted loop id="bgvid">
-    <source src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/images/earth.mp4?raw=true#t=50,283" type="video/mp4">
+    <source src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/images/earth.mp4#t=50,283" type="video/mp4">
 </video>
 
 <div id="mask"></div>
@@ -300,11 +300,24 @@ video#bgvid {
         }
     }
 
+    function loopVideo(elem, start, end) {
+        elem.currentTime = start;
+        elem.play;
+        elem.addEventListener('timeupdate', function () {
+            if (elem.currentTime >= end) {
+                elem.currentTime = start;
+                elem.play();
+            }
+        }, false);
+    }
+
     $('#go-btn').click(function() {
         $('#summary').animate({opacity: 0}, 400, function() {
             toggleSummary(false);
         });
     });
+
+    loopVideo($('video')[0], 50, 283);
 
 </script>
 
