@@ -17,7 +17,12 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <style>
 
 body {
+    font-family: 'Roboto', sans-serif;
     background-color: #000;
+}
+a {
+    color: #aaa;
+    text-decoration: none;
 }
 #mask {
     position: fixed;
@@ -29,7 +34,6 @@ body {
     left: 0px;
 }
 #summary {
-    font-family: 'Roboto', sans-serif;
     position: fixed;
     background: rgba(30, 35, 40, 0.9);
     display: inline-block;
@@ -38,6 +42,20 @@ body {
     right: 0px;
     left: 0px;
     z-index: 3;
+    color: rgba(255, 255, 255, 0.8);
+}
+#links {
+    position: fixed;
+    /*background: rgba(30, 35, 40, 0.9);*/
+    display: inline-block;
+    /*top: 0px;*/
+    bottom: 0px;
+    right: 0px;
+    /*left: 0px;*/
+    z-index: 3;
+    font-size: 12px;
+    padding: 10px;
+    font-weight: 100;
     color: rgba(255, 255, 255, 0.8);
 }
 #summary h1 {
@@ -50,7 +68,7 @@ body {
     font-size: 14px;
     line-height: 23px;
     font-weight: 100;
-    text-align: justify;
+    text-align: left;
 }
 #summary p.subdued {
     opacity: 0.5;
@@ -85,7 +103,7 @@ body {
     width: 400px;
     height: 400px;
 }
-.message a {
+.button {
     margin-top: 15px;
     display: inline-block;
     font-size: 18px;
@@ -146,7 +164,7 @@ video#bgvid {
 </div>
 
 <div id="summary">
-<div class="message">
+<!-- <div class="message">
     <h1>Astronaut</h1>
     <p>Today, you are an Astronaut. You are floating in inner space 100 miles above the surface of Earth. You peer through your window and this is what you see. You are people watching. These are fleeting moments.</p>
 
@@ -157,7 +175,20 @@ video#bgvid {
     <p class="subued dead">The controls are simple. If you like a video and wish it not to switch, you can press down <span class="inline-icon hold"></span>. If a video switches before you've a chance to press hold, you can press the back <span class="inline-icon back"></span> which will return to and hold the previous video. You can return to the live stream by pressing right <span class="inline-icon live"></span>.</p>
 
     <a class="button" id="go-btn" href="#">GO</a>
+</div> -->
+<div class="message">
+    <!-- <h1>Astronaut</h1> -->
+    <p>Astronaut was created by <a href="https://twitter.com/wongavision">Andrew Wong</a> and <a href="https://twitter.com/astrojams1">James Thompson</a> on a sunny day in San Francisco in 2011. </p>
+
+    <p>Beautiful footage of our earth is proved by the <a href="https://eol.jsc.nasa.gov/">Earth Science and Remote Sensing Unit, NASA Johnson Space Center</a>, and assembled together by <a href="https://vimeo.com/40237562">Tom King</a>.</p>
+
+    <p>Soundtrack provided by Claude Debussy's Claire de Lune on the album Play ﹠ Pause: Love.</p>
+    <!-- <a class="button" id="go-btn" href="#">GO</a> -->
 </div>
+</div>
+
+<div id="links">
+<a href="#">about</a> | <a href="#">controls</a>
 </div>
 <script>
     var tag = document.createElement('script');
@@ -310,6 +341,25 @@ video#bgvid {
             }
         }, false);
     }
+
+    function showIfMove(element, timeoutSec) {
+        // shows an element if
+        var timer;
+        $(element).mousemove(function() {
+            console.log('move');
+            if (timer) {
+                clearTimeout(timer);
+                console.log('clearing old timer');
+            }
+            $(element).css("display", "inline-block");
+            timer = setTimeout(function() {
+                console.log('disappearing');
+                $(element).css("display", "none");
+            }, timeoutSec)
+        });
+    }
+
+    // showIfMove()
 
     $('#go-btn').click(function() {
         $('#summary').animate({opacity: 0}, 400, function() {
