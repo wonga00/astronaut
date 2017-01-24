@@ -11,7 +11,8 @@ var express = require('express')
   , server = http.createServer(app)
   , io = require('socket.io').listen(server)
   , moment = require('moment')
-  , videoStream = require('./videoStream.js');
+  , videoStream = require('./videoStream.js')
+  , lastHeld;
 
 
 /* --------- CONFIG ------------ */
@@ -38,11 +39,28 @@ app.configure('production', function(){
 });
 
 
+function logEvent(eventType, data) {
+  console.log("event", {
+    eventType: eventType,
+    payload: data,
+    t: (new Date()).toISOString()
+  });
+}
+
 /* ---------- REAL-TIME ---------- */
 
 io.sockets.on('connection', function(socket) {
     socket.emit('video', videoStream.currentVid());
+    socket.emit('held', lastHeld);
+
     io.sockets.emit('num_viewers', io.sockets.clients().length);
+    socket.on("control", function(d) {
+      logEvent('control', d);
+      if (d.controlType === 'hold') {
+        lastHeld = d.videoId;
+        io.sockets.emit("held", lastHeld);
+      }
+    });
     socket.on("disconnect", function() {
       io.sockets.emit('num_viewers', io.sockets.clients().length - 1);
     } );
@@ -56,7 +74,8 @@ app.get('/z', function(req, res) {
     title: 'Admin',
     numVideos: videoStream.numVideos(),
     numConnections: io.sockets.clients().length,
-    lastRefresh: videoStream.lastRefresh()
+    lastRefresh: videoStream.lastRefresh(),
+    lastHeld: lastHeld
   });
 });
 
@@ -76,6 +95,6 @@ server.listen(process.env['app_port'] || 3000);
 console.log("Astronaut server listening on port %d in %s mode", server.address().port, app.settings.env);
 
 videoStream.start(function(data) {
-  console.log("emitting video", data);
+  logEvent('emitVideo', data);
   io.sockets.emit('video', data);
 });

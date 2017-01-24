@@ -137,6 +137,11 @@ function SmoothPlayer(div, args) {
         return true;
     }
 
+    function currentVideoId() {
+        var url = _current.getVideoUrl();
+        return url.substr(url.length - 11);
+    }
+
     //mutes the player
     function mute() {
         if (!_ready) {
@@ -297,6 +302,7 @@ function SmoothPlayer(div, args) {
     self.play = play;
     self.playerState = playerState;
     self.printPlayers = printPlayers;
+    self.currentVideoId = currentVideoId;
     self.isReady = function() { return _ready;};
     self.current = function() { return _current; };
     self.back = function() { return _back; };

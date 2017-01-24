@@ -7,7 +7,7 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <meta name="description" content="A feed of the present">
 <meta name="author" content="James Thompson and Andrew Wong" />
 
-<script type="text/javascript" src="javascripts/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="/javascripts/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="/javascripts/smoothplayer3.js"></script>
 <link rel="stylesheet/less" type="text/css" href="/stylesheets/bootstrap.min.css" />
@@ -182,7 +182,6 @@ video#bgvid {
     <div id="player"></div>
     <div id="control-btn"></div>
 </div>
-ll
 <div id="intro" class="overlay">
     <div class="message">
         <h1>Astronaut</h1>
@@ -213,7 +212,7 @@ ll
 
 <script>
     var tag = document.createElement('script');
-
+    var socket;
     tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -238,7 +237,7 @@ ll
                     refreshControlButton();
                 },
                 onReady: function() {
-                    var socket = io.connect();
+                    socket = io.connect();
                     sp.mute();
                     toggleIntro(true);
                     socket.on('video', function(data) {
@@ -249,14 +248,33 @@ ll
     }
 
     function hold() {
+        if (socket) {
+            socket.emit('control', {
+                controlType: 'hold',
+                videoId: sp.currentVideoId()
+            })
+        }
+
         sp.hold();
         refreshControlButton();
     }
     function back() {
         sp.goBack();
+        if (socket) {
+            socket.emit('control', {
+                controlType: 'back',
+                videoId: sp.currentVideoId()
+            })
+        }
         refreshControlButton();
     }
     function resume() {
+        if (resume) {
+            socket.emit('control', {
+                controlType: 'resume',
+                videoId: sp.currentVideoId()
+            })
+        }
         sp.resume();
         refreshControlButton();
     }

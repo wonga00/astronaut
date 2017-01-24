@@ -8,14 +8,23 @@
 </head>
 <body>
 
+<style>
+img {
+    width: 200px;
+}
+</style>
 <p> <%= numVideos %> videos</p>
 <p> last gathered at <%= lastRefresh %></p>
 <p> <span id="viewer-count">--</span> viewers</p>
-
+<p> last video held: </p>
+<img id="last-img" src="">
 <script>
 var socket = io.connect();
 socket.on('num_viewers', function(data) {
     $('#viewer-count').text(data);
+});
+socket.on('held', function(data) {
+    $('#last-img').attr('src', 'http://img.youtube.com/vi/' + data + '/0.jpg');
 });
 </script>
 </body>
