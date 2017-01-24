@@ -7,7 +7,7 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <meta name="description" content="A feed of the present">
 <meta name="author" content="James Thompson and Andrew Wong" />
 
-<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript" src="javascripts/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="/javascripts/smoothplayer3.js"></script>
 <link rel="stylesheet/less" type="text/css" href="/stylesheets/bootstrap.min.css" />
@@ -19,60 +19,55 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #000;
+    color: rgba(255, 255, 255, 0.8);
 }
+
 a {
-    color: #aaa;
+    color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
 }
-#mask {
-    position: fixed;
-    background: rgba(30, 35, 40, 0.5);
-    display: inline;
-    top: 0px;
-    bottom: 0px;
-    right: 0px;
-    left: 0px;
+
+.hidden {
+    display: none;
 }
-#summary {
+
+.overlay {
     position: fixed;
     background: rgba(30, 35, 40, 0.9);
-    display: inline-block;
     top: 0px;
     bottom: 0px;
     right: 0px;
     left: 0px;
     z-index: 3;
-    color: rgba(255, 255, 255, 0.8);
 }
+
 #links {
     position: fixed;
-    /*background: rgba(30, 35, 40, 0.9);*/
-    display: inline-block;
-    /*top: 0px;*/
+    display: none;
     bottom: 0px;
     right: 0px;
-    /*left: 0px;*/
     z-index: 3;
     font-size: 12px;
     padding: 10px;
     font-weight: 100;
-    color: rgba(255, 255, 255, 0.8);
 }
-#summary h1 {
+
+#links a {
+    color: #aaa;
+}
+
+#intro h1 {
     font-size: 30pt;
     font-weight: 300;
     text-transform: uppercase;
-    margin-top: -48px;
+    margin-top: -30px;
+    margin-bottom: 30px;
+    text-align: center;
 }
-#summary p {
-    font-size: 14px;
-    line-height: 23px;
-    font-weight: 100;
-    text-align: left;
+#intro .message p {
+    text-align: justify;
 }
-#summary p.subdued {
-    opacity: 0.5;
-}
+
 #smooth-container {
     position: absolute;
     margin: auto;
@@ -90,8 +85,8 @@ a {
     background-color: @primary-accent;
     width: 960px;
     height: 540px;
-    /*overflow: hidden;*/
 }
+
 .message {
     position: absolute;
     margin: auto;
@@ -103,20 +98,47 @@ a {
     width: 400px;
     height: 400px;
 }
+
+.message p {
+    font-size: 14px;
+    line-height: 23px;
+    font-weight: 100;
+    text-align: left;
+}
+
+.message p a {
+    text-decoration: none;
+    border-bottom: 1px solid #eee;
+}
+
+a.boxclose{
+    float:right;
+    margin-top:-20px;
+    margin-right:-20px;
+    cursor:pointer;
+    color: #eee;
+    font-size: 28px;
+    display: inline-block;
+    font-weight: 100;
+    line-height: 0px;
+}
+
+.boxclose:before {
+    content: "×";
+}
+
 .button {
     margin-top: 15px;
     display: inline-block;
     font-size: 18px;
-    border: 1px solid #EEE;
+    border: 1px solid #eee;
     padding: 16px 18px;
-    color: #EEE;
+    color: #eee;
     text-decoration: none;
     cursor: pointer;
     opacity: 0;
 }
-.dead {
-    display: none;
-}
+
 #control-btn {
     width: 20px;
     height: 20px;
@@ -124,7 +146,6 @@ a {
     border-radius: 50%;
     margin: auto;
     margin-top: 20px;
-    /*display:none;*/
 
     cursor: pointer;
 }
@@ -144,7 +165,7 @@ video#bgvid {
     -moz-transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);
-    background: url(earth.jpg) no-repeat;
+    background: url(https://raw.githubusercontent.com/wonga00/astronaut/master/public/images/earth.jpg) no-repeat;
     background-size: cover;
 }
 
@@ -156,40 +177,40 @@ video#bgvid {
     <source src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/images/earth.mp4#t=50,283" type="video/mp4">
 </video>
 
-<div id="mask"></div>
 <audio loop src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/audio/debussy.mp4" preload="auto"></audio>
 <div id="smooth-container">
     <div id="player"></div>
     <div id="control-btn"></div>
 </div>
+ll
+<div id="intro" class="overlay">
+    <div class="message">
+        <h1>Astronaut</h1>
+        <p>Today, you are an Astronaut. You are floating in inner space 100 miles above the surface of Earth. You peer through your window and this is what you see. You are people watching. These are fleeting moments.</p>
 
-<div id="summary">
-<!-- <div class="message">
-    <h1>Astronaut</h1>
-    <p>Today, you are an Astronaut. You are floating in inner space 100 miles above the surface of Earth. You peer through your window and this is what you see. You are people watching. These are fleeting moments.</p>
+        <p>These videos come from YouTube. They were uploaded in the last week and have titles like <code>DSC 1234</code> and <code>IMG 4321</code>. They have almost zero previous views. They are unnamed, unedited, and unseen by anyone but YOU.</p>
 
-    <p>These videos come from YouTube. They were uploaded in the last week and have titles like <code>DSC 1234</code> and <code>IMG 4321</code>. They have almost zero previous views. They are unnamed, unedited, and unseen by anyone but YOU.</p>
+        <p>The Astronaut video stream starts when you press <code>GO</code>. Videos change periodically. If you wish to linger, tap the button.</p>
 
-    <p>The Astronaut video stream starts when you press <code>GO</code>. Videos change periodically. If you wish to linger, tap the button.</p>
-
-    <p class="subued dead">The controls are simple. If you like a video and wish it not to switch, you can press down <span class="inline-icon hold"></span>. If a video switches before you've a chance to press hold, you can press the back <span class="inline-icon back"></span> which will return to and hold the previous video. You can return to the live stream by pressing right <span class="inline-icon live"></span>.</p>
-
-    <a class="button" id="go-btn" href="#">GO</a>
-</div> -->
-<div class="message">
-    <!-- <h1>Astronaut</h1> -->
-    <p>Astronaut was created by <a href="https://twitter.com/wongavision">Andrew Wong</a> and <a href="https://twitter.com/astrojams1">James Thompson</a> on a sunny day in San Francisco in 2011. </p>
-
-    <p>Beautiful footage of our earth is proved by the <a href="https://eol.jsc.nasa.gov/">Earth Science and Remote Sensing Unit, NASA Johnson Space Center</a>, and assembled together by <a href="https://vimeo.com/40237562">Tom King</a>.</p>
-
-    <p>Soundtrack provided by Claude Debussy's Claire de Lune on the album Play ﹠ Pause: Love.</p>
-    <!-- <a class="button" id="go-btn" href="#">GO</a> -->
+        <a class="button" id="go-btn" href="#">GO</a>
+    </div>
 </div>
+
+<div class="overlay hidden" id="about">
+    <div class="message">
+        <a href="#" class="boxclose"></a>
+        <p>Astronaut was created by <a target="_blank" href="https://twitter.com/wongavision">Andrew Wong</a> and <a target="_blank" href="https://twitter.com/astrojams1">James Thompson</a> on a sunny day in San Francisco in 2011. </p>
+
+        <p>Beautiful footage of our earth is provided by the <a target="_blank" href="https://eol.jsc.nasa.gov/">Earth Science and Remote Sensing Unit, NASA Johnson Space Center</a>, and assembled together by <a target="_blank" href="https://vimeo.com/40237562">Tom King</a>.</p>
+
+        <p>Soundtrack provided by Claude Debussy's Claire de Lune on the album Play﹠Pause: Love.</p>
+    </div>
 </div>
 
 <div id="links">
-<a href="#">about</a> | <a href="#">controls</a>
+    <a href="#" id="about-btn">about</a>
 </div>
+
 <script>
     var tag = document.createElement('script');
 
@@ -197,30 +218,7 @@ video#bgvid {
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-    var sp,
-        videos = [
-            'q2XBK_PZgWY',
-            'RQjdcyRwwP8',
-            'P9bcm3uT0NY',
-            'I4WgpPg9EcA',
-            'UOZVb91HwrQ',
-            'rlZKRgtI3bs',
-            'ovAjtEWUEGc',
-            'BzVuPNSzP1E',
-            'Y1fqjCxkdI8',
-            'R3HILwnTfTc',
-            '0gip2UCMc5o',
-            '6G8rpU3jZCw',
-            'rNZeQ1UXP7Y',
-            'DHa7hX-43a4',
-            'LpeRgRl8HG4',
-            '4Fs9rj9uLyk',
-            'NnWE6QMczfQ',
-            'Lqbya6dBfDA',
-            'QRrAGrxDYCE',
-            'DjaZ2LKwhfI'
-        ],
-        i = 0;
+    var sp;
 
     function onYouTubeIframeAPIReady() {
         sp = new SmoothPlayer('player', {
@@ -228,23 +226,22 @@ video#bgvid {
                 height: '540px',
                 onStart: function() {
                     $("#smooth-container").animate({opacity: 1}, 2000);
-                    $('#summary a').animate({opacity: 1}, 1000);
+
+                    bindPages([
+                        ['#about-btn', '#about']
+                    ], sp);
+
+
+                    $('#intro a').animate({opacity: 1}, 1000);
                 },
                 onResume: function() {
                     refreshControlButton();
                 },
                 onReady: function() {
-                    // debug
-                    // sp.play(videos[i]);
-                    // window.setInterval(function() {
-                    //     i = (i + 1) % videos.length;
-                    //     sp.play(videos[i]);
-                    // }, 8000);
                     var socket = io.connect();
                     sp.mute();
-                    toggleSummary(true);
+                    toggleIntro(true);
                     socket.on('video', function(data) {
-                        console.log('received', data.video.id);
                         sp.play(data.video.id);
                     });
                 }
@@ -314,18 +311,18 @@ video#bgvid {
         else if (event.which == 39) { // 'right'
             resume();
         } else if (event.which == 27) { // 'escape'
-            toggleSummary(true);
+            toggleIntro(true);
         }
     });
 
 
-    function toggleSummary(on) {
+    function toggleIntro(on) {
         if (on) {
-            $('#summary').css({display: "inline-block", opacity: 1});
+            $('#intro').css({display: "inline-block", opacity: 1});
             sp.mute();
             $('#control-btn').css('display', 'none');
         } else {
-            $('#summary').css("display", "none");
+            $('#intro').css("display", "none");
             sp.unMute();
             $('#control-btn').css('display', 'inline-block');
         }
@@ -342,29 +339,60 @@ video#bgvid {
         }, false);
     }
 
-    function showIfMove(element, timeoutSec) {
-        // shows an element if
-        var timer;
-        $(element).mousemove(function() {
-            console.log('move');
+    function showIfMove(element, duration) {
+        var timer,
+            duration = duration || 2000;
+
+        $(element).css("display", "none");
+
+        $('body').mousemove(function() {
             if (timer) {
                 clearTimeout(timer);
-                console.log('clearing old timer');
             }
-            $(element).css("display", "inline-block");
+            $(element).css({display: "inline-block", opacity: 1});
             timer = setTimeout(function() {
-                console.log('disappearing');
-                $(element).css("display", "none");
-            }, timeoutSec)
+                $(element).animate({opacity: 0}, 400, function() {
+                    $(element).css("display", "none");
+                });
+            }, duration)
         });
     }
 
-    // showIfMove()
+    function bindPages(pages, sp) {
+        function showPage(page) {
+            pages.forEach(function(pageLink) {
+                $(pageLink[1]).toggleClass('hidden', pageLink[1] !== page);
+            });
+
+            sp.mute();
+        }
+
+        function hidePages() {
+            pages.forEach(function(pageLink) {
+                $(pageLink[1]).toggleClass('hidden', true);
+            });
+
+            sp.unMute();
+        }
+
+        pages.forEach(function(p) {
+            $(p[1]).toggleClass('hidden', true);
+            $(p[0]).click(function() {
+                showPage(p[1]);
+            })
+            $(p[1] + ' .boxclose').click(function() {
+                hidePages();
+            })
+
+        })
+    }
 
     $('#go-btn').click(function() {
-        $('#summary').animate({opacity: 0}, 400, function() {
-            toggleSummary(false);
+        $('#intro').animate({opacity: 0}, 400, function() {
+            toggleIntro(false);
         });
+
+        showIfMove('#links');
     });
 
     loopVideo($('video')[0], 50, 283);
