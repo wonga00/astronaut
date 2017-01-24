@@ -12,6 +12,7 @@ var express = require('express')
   , io = require('socket.io').listen(server)
   , moment = require('moment')
   , videoStream = require('./videoStream.js')
+  , numViewers = 0
   , lastHeld;
 
 
@@ -53,7 +54,9 @@ io.sockets.on('connection', function(socket) {
     socket.emit('video', videoStream.currentVid());
     socket.emit('held', lastHeld);
 
-    io.sockets.emit('num_viewers', io.sockets.clients().length);
+    numViewers += 1;
+    io.sockets.emit('num_viewers', numViewers);
+
     socket.on("control", function(d) {
       logEvent('control', d);
       if (d.controlType === 'hold') {
@@ -61,8 +64,10 @@ io.sockets.on('connection', function(socket) {
         io.sockets.emit("held", lastHeld);
       }
     });
+
     socket.on("disconnect", function() {
-      io.sockets.emit('num_viewers', io.sockets.clients().length - 1);
+      numViewers -= 1;
+      io.sockets.emit('num_viewers', numViewers);
     } );
 });
 
