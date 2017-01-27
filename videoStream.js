@@ -181,9 +181,9 @@ function readVideos() {
 
 function getFreshVideos() {
   youtube.getVids({
-    tags: ['dsc', 'img', 'mov'],
-    startIndex: 3,
-    endIndex: 699,
+    tags: ['mvi'],
+    startIndex: 1200,
+    endIndex: 2400,
     vidCallback: loadVideos
   });
 }
