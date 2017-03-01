@@ -178,7 +178,6 @@ video#bgvid {
     -moz-transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);
-    background: url(https://raw.githubusercontent.com/wonga00/astronaut/master/public/images/earth.jpg) no-repeat;
     background-size: cover;
 }
 
@@ -187,10 +186,10 @@ video#bgvid {
 
 <body>
 <video playsinline autoplay="" muted loop id="bgvid">
-    <source src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/images/earth.mp4#t=50,283" type="video/mp4">
+    <source src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/images/earth.mp4" type="video/mp4">
 </video>
 
-<audio loop src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/audio/debussy.mp4" preload="auto"></audio>
+<audio loop src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/audio/debussy.mp3" preload="auto"></audio>
 <div id="smooth-container">
     <div id="player"></div>
     <div id="control-btn"></div>
@@ -213,9 +212,9 @@ video#bgvid {
         <a href="#" class="boxclose"></a>
         <p>Astronaut was created by <a target="_blank" href="https://twitter.com/wongavision">Andrew Wong</a> and <a target="_blank" href="https://twitter.com/astrojams1">James Thompson</a> on a sunny day in San Francisco in 2011. </p>
 
-        <p>Beautiful footage of our earth is provided by the <a target="_blank" href="https://eol.jsc.nasa.gov/">Earth Science and Remote Sensing Unit, NASA Johnson Space Center</a>, and assembled together by <a target="_blank" href="https://vimeo.com/40237562">Tom King</a>.</p>
+        <p>Beautiful footage of our earth is provided by the <a target="_blank" href="https://eol.jsc.nasa.gov/">Earth Science and Remote Sensing Unit, NASA Johnson Space Center</a>.</p>
 
-        <p>Soundtrack provided by Claude Debussy's Claire de Lune on the album Play﹠Pause: Love.</p>
+        <p>Soundtrack provided by Claude Debussy's Claire de Lune performed by Caela Harrison <a target="_blank" href="https://creativecommons.org/licenses/by-nd/3.0/legalcode">(cc)</a>. </p>
     </div>
 </div>
 
@@ -318,7 +317,7 @@ video#bgvid {
         var a = document.getElementsByTagName("audio")[0];
         if (on) {
             $('#control-btn').css('display', 'none');
-            a.currentTime = 8;
+            a.currentTime = 0;
             a.play();
             sp.resume();
             sp.mute();
@@ -429,7 +428,7 @@ video#bgvid {
         showIfMove('#links');
     });
 
-    loopVideo($('video')[0], 50, 283);
+    loopVideo($('video')[0], 0, 110);
 
 </script>
 
