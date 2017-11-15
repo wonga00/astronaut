@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Astronaut</title>
+<meta name="keywords" content="videos home, home movie videos, home made videos, home clips videos, funniest home videos, americas home videos, free home videos, videos de raw, america home videos, home x videos, wwe raw videos, american astronaut, the unseen video, astronaut pictures, my home videos, astronaut training, coming home videos, raw video clips, smackdown vs raw videos, raw black videos
+home videos show, making home videos, home and away videos, astronaut aliens, 1000 home videos, america funniest home videos episodes, wwe home videos, mtv home videos, unseen videos of actress, home videos cartoon, pbs home videos, moserbaer home videos, the world unseen videos, this week raw videos, worlds funniest home videos, home videos adult swim, home mae videos, excel home videos, home amde videos, unseen youtube videos, roadies unseen videos
+">
+<meta name="description" content="A feed of the present">
+<meta name="author" content="James Thompson and Andrew Wong" />
+
+<script type="text/javascript" src="/javascripts/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="/javascripts/smoothplayer3.js"></script>
+<link rel="stylesheet/less" type="text/css" href="/stylesheets/bootstrap.min.css" />
+<link rel="shortcut icon" href="/favicon.ico">
+<link href='http://fonts.googleapis.com/css?family=Roboto:500,300' rel='stylesheet' type='text/css'>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-37464803-1', 'auto');
+ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<style>
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #000;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+}
+
+.hidden {
+    display: none;
+}
+
+.overlay {
+    position: fixed;
+    background: rgba(30, 35, 40, 0.9);
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    z-index: 3;
+}
+
+#links {
+    position: fixed;
+    display: none;
+    bottom: 0px;
+    right: 0px;
+    z-index: 3;
+    font-size: 12px;
+    padding: 10px;
+    font-weight: 100;
+}
+
+#links a {
+    color: #aaa;
+}
+
+#intro h1 {
+    font-size: 30pt;
+    font-weight: 300;
+    text-transform: uppercase;
+    margin-top: -30px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+#intro .message p {
+    text-align: justify;
+}
+
+#smooth-container {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 960px;
+    height: 690px;
+    /*opacity: 0;*/
+    text-align: center;
+}
+
+#player {
+    display: relative;
+    background-color: @primary-accent;
+    width: 960px;
+    height: 540px;
+    /*background: white;*/
+    /*background: url('./images/youtube.png');*/
+}
+
+#ad {
+    width: 960px;
+    height: 150px;
+    color: white;
+    font-size: 32px;
+    line-height: 40px;
+    text-align: left;
+    padding-top: 20px;
+    text-shadow: 0 0 10px black;
+}
+
+.message {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    width: 400px;
+    height: 400px;
+}
+
+.message p {
+    font-size: 14px;
+    line-height: 23px;
+    font-weight: 100;
+    text-align: left;
+}
+
+.message p a {
+    text-decoration: none;
+    border-bottom: 1px solid #eee;
+}
+
+a.boxclose{
+    float:right;
+    margin-top:-20px;
+    margin-right:-20px;
+    cursor:pointer;
+    color: #eee;
+    font-size: 28px;
+    display: inline-block;
+    font-weight: 100;
+    line-height: 0px;
+}
+
+.boxclose:before {
+    content: "×";
+}
+
+.button {
+    margin-top: 15px;
+    display: inline-block;
+    font-size: 18px;
+    border: 1px solid #eee;
+    padding: 16px 18px;
+    color: #eee;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: 0;
+}
+
+#control-btn {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #eee;
+    border-radius: 50%;
+    margin: auto;
+    margin-top: 20px;
+
+    cursor: pointer;
+}
+.hold {
+    background: rgba(255, 180, 180, 0.6);
+}
+video#bgvid {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    background-size: cover;
+}
+.bold {
+    font-weight: bold;
+}
+.livestream {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 27px;
+    font-weight: bold;
+}
+#ad .code {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 27px;
+}
+
+.dot {
+    display: inline-block;
+    background: red;
+    width: 19px;
+    height: 19px;
+    margin-right: 8px;
+    border-radius: 50%;
+}
+
+</style>
+</head>
+
+<body>
+<video playsinline autoplay="" muted loop id="bgvid">
+    <source src="./images/earth.mp4" type="video/mp4">
+</video>
+
+<audio loop src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/audio/debussy.mp3" preload="auto"></audio>
+<div id="smooth-container">
+    <div id="player"></div>
+    <div id="ad">
+        <span class="bold">astronaut.io</span> is a <span class="livestream"><div class="dot"></div>LIVE STREAM</span> of videos uploaded in the last week with titles like <div class="code"><code>DSC 1234</code></div> and <div class="code"><code>IMG 4321</code></div>. Each video is unnamed, unedited, and shown here for the first time.
+    </div>
+    <!-- <div id="control-btn"></div> -->
+</div>
+
+<div id="intro" class="overlay">
+    <div class="message">
+        <h1>Astronaut</h1>
+        <p>loading for IDFA...</p>
+        <a class="button" id="go-btn" href="#">GO</a>
+    </div>
+</div>
+
+<div class="overlay hidden" id="about">
+    <div class="message">
+        <a href="#" class="boxclose"></a>
+        <p>Astronaut was created by <a target="_blank" href="https://twitter.com/wongavision">Andrew Wong</a> and <a target="_blank" href="https://twitter.com/astrojams1">James Thompson</a> on a sunny day in San Francisco in 2011. </p>
+
+        <p>Beautiful footage of our earth is provided by the <a target="_blank" href="https://eol.jsc.nasa.gov/">Earth Science and Remote Sensing Unit, NASA Johnson Space Center</a>.</p>
+
+        <p>Soundtrack provided by Claude Debussy's Claire de Lune performed by Caela Harrison <a target="_blank" href="https://creativecommons.org/licenses/by-nd/3.0/legalcode">(cc)</a>. </p>
+    </div>
+</div>
+
+<div id="links">
+    <a href="#" id="about-btn">about</a>
+</div>
+
+<script>
+    toggleIntro(false);
+    var tag = document.createElement('script');
+    var socket;
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    var sp;
+
+    toggleIntro(false);
+
+    function onYouTubeIframeAPIReady() {
+        sp = new SmoothPlayer('player', {
+                width: '960px',
+                height: '540px',
+                onStart: function() {
+                    $("#smooth-container").animate({opacity: 1}, 2000);
+
+                    bindPages([
+                        ['#about-btn', '#about']
+                    ], sp);
+
+                    // $('#intro a').animate({opacity: 1}, 1000);
+                    // $('#intro').css({display: 'none'});
+                },
+                onResume: function() {
+                    refreshControlButton();
+                },
+                onReady: function() {
+                    socket = io.connect();
+                    sp.mute();
+                    // toggleIntro(true);
+                    socket.on('video', function(data) {
+                        sp.play(data.video.id);
+                    });
+                }
+            });
+    }
+
+    function initSocket() {
+        socket = io.connect();
+        socket.on('video', function(data) {
+        });
+        socket.on('remoteHold', function(data) {
+            if (data.channelName === 'idfa') {
+                console.log('holding');
+                // hold();
+            }
+        })
+    }
+
+    initSocket();
+    function hold() {
+        if (socket) {
+            socket.emit('control', {
+                controlType: 'hold',
+                videoId: sp.currentVideoId()
+            })
+        }
+        ga('send', 'event', 'player', 'hold', sp.currentVideoId());
+        sp.hold();
+        refreshControlButton();
+    }
+    function back() {
+        sp.goBack();
+        if (socket) {
+            socket.emit('control', {
+                controlType: 'back',
+                videoId: sp.currentVideoId()
+            })
+        }
+        ga('send', 'event', 'player', 'back', sp.currentVideoId());
+        refreshControlButton();
+    }
+    function resume() {
+        if (resume) {
+            socket.emit('control', {
+                controlType: 'resume',
+                videoId: sp.currentVideoId()
+            })
+        }
+        ga('send', 'event', 'player', 'resume', sp.currentVideoId());
+        sp.resume();
+        refreshControlButton();
+    }
+
+    function refreshControlButton() {
+        var playerState = sp.playerState();
+        if (playerState === 'hold') {
+            $('#control-btn').toggleClass('hold', true);
+        } else if (playerState === 'back') {
+            $('#control-btn').toggleClass('hold', true);
+        } else {
+            $('#control-btn').toggleClass('hold', false);
+        }
+    }
+
+    $('#control-btn').click(function() {
+        if (sp.playerState() =='live') {
+            hold();
+        } else {
+            resume();
+        }
+    });
+
+    var inTheaterMode = false;
+    function theaterMode(on) {
+        var a = document.getElementsByTagName("audio")[0];
+        if (on) {
+            $('#control-btn').css('display', 'none');
+            a.currentTime = 0;
+            a.play();
+            sp.resume();
+            sp.mute();
+            ga('send', 'event', 'player', 'theater', '');
+        } else {
+            $('#control-btn').css('display', 'inline-block');
+            a.pause();
+            sp.unMute();
+        }
+        inTheaterMode = on;
+    }
+
+    //this is the listener for keypresses
+    $('body').keydown(function(event) {
+        if (event.which == 32) { // 'space'
+            theaterMode(!inTheaterMode);
+        }
+        else if (event.which == 37) { // 'left'
+            back();
+        }
+        else if (event.which == 40) { // 'down'
+            hold();
+        }
+        else if (event.which == 39) { // 'right'
+            resume();
+        } else if (event.which == 27) { // 'escape'
+            // toggleIntro(true);
+        }
+    });
+
+
+    function toggleIntro(on) {
+        if (on) {
+            $('#intro').css({display: "inline-block", opacity: 1});
+            if (sp) {
+                sp.mute();
+            }
+
+            $('#control-btn').css('display', 'none');
+        } else {
+            $('#intro').css("display", "none");
+            if (sp) {
+                sp.unMute();
+            }
+            $('#control-btn').css('display', 'inline-block');
+        }
+    }
+
+    function loopVideo(elem, start, end) {
+        elem.currentTime = start;
+        elem.play;
+        elem.addEventListener('timeupdate', function () {
+            if (elem.currentTime >= end) {
+                elem.currentTime = start;
+                elem.play();
+            }
+        }, false);
+    }
+
+    function showIfMove(element, duration) {
+        var timer,
+            duration = duration || 2000;
+
+        $(element).css("display", "none");
+
+        $('body').mousemove(function() {
+            if (timer) {
+                clearTimeout(timer);
+            }
+            $(element).css({display: "inline-block", opacity: 1});
+            timer = setTimeout(function() {
+                $(element).animate({opacity: 0}, 400, function() {
+                    $(element).css("display", "none");
+                });
+            }, duration)
+        });
+    }
+
+    function bindPages(pages, sp) {
+        function showPage(page) {
+            pages.forEach(function(pageLink) {
+                $(pageLink[1]).toggleClass('hidden', pageLink[1] !== page);
+            });
+
+            sp.mute();
+        }
+
+        function hidePages() {
+            pages.forEach(function(pageLink) {
+                $(pageLink[1]).toggleClass('hidden', true);
+            });
+
+            sp.unMute();
+        }
+
+        pages.forEach(function(p) {
+            $(p[1]).toggleClass('hidden', true);
+            $(p[0]).click(function() {
+                showPage(p[1]);
+            })
+            $(p[1] + ' .boxclose').click(function() {
+                hidePages();
+            })
+
+        })
+    }
+
+    $('#go-btn').click(function() {
+        $('#intro').animate({opacity: 0}, 400, function() {
+            toggleIntro(false);
+        });
+
+        showIfMove('#links');
+    });
+
+    var flashState = true;
+    setInterval(function() {
+        document.querySelector('.dot').style.background = flashState ? 'none' : 'red';
+
+        flashState = !flashState;
+    }, 1000);
+
+    loopVideo($('video')[0], 0, 110);
+
+</script>
+
+</body>
+</html>

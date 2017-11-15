@@ -96,6 +96,10 @@ app.get('/', function(req, res) {
   res.render('v2.ejs', {});
 });
 
+app.get('/idfa', function(req, res) {
+  res.render('idfa.ejs', {});
+})
+
 server.listen(process.env['app_port'] || 3000);
 console.log("Astronaut server listening on port %d in %s mode", server.address().port, app.settings.env);
 
