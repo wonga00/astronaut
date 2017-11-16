@@ -281,16 +281,19 @@ video#bgvid {
                     bindPages([
                         ['#about-btn', '#about']
                     ], sp);
-
+                    var a = document.getElementsByTagName("audio")[0];
+                    a.play();
+                    sp.setVolume(20);
                     // $('#intro a').animate({opacity: 1}, 1000);
                     // $('#intro').css({display: 'none'});
+
                 },
                 onResume: function() {
                     refreshControlButton();
                 },
                 onReady: function() {
                     socket = io.connect();
-                    sp.mute();
+                    // sp.mute();
                     // toggleIntro(true);
                     socket.on('video', function(data) {
                         sp.play(data.video.id);

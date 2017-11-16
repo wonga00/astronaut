@@ -142,6 +142,15 @@ function SmoothPlayer(div, args) {
         return url.substr(url.length - 11);
     }
 
+    function setVolume(volume) {
+        if (!_ready) {
+            return;
+        }
+        _buffering.setVolume(volume);
+        _current.setVolume(volume);
+        _back.setVolume(volume);
+    }
+
     //mutes the player
     function mute() {
         if (!_ready) {
@@ -307,6 +316,8 @@ function SmoothPlayer(div, args) {
     self.current = function() { return _current; };
     self.back = function() { return _back; };
     self.buffering = function() { return _buffering; };
+    self.setVolume = setVolume;
+
     init(
         div,
         args.width,

@@ -173,6 +173,15 @@ var SmoothPlayer = {
         return true;
     },
 
+    quiet : function() {
+        if (!this.ready) {
+            return;
+        }
+        this.buffering.setVolume(10);
+        this.current.setVolume(10);
+        this.back.setVolume(10);
+    },
+
     //mutes the player
     mute : function() {
         if (!this.ready) {
