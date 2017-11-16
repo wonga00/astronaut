@@ -376,12 +376,14 @@ video#bgvid {
             a.currentTime = 0;
             a.play();
             sp.resume();
+            sp.setVolume(20);
             sp.mute();
             ga('send', 'event', 'player', 'theater', '');
         } else {
             $('#control-btn').css('display', 'inline-block');
             a.pause();
             sp.unMute();
+            sp.setVolume(80);
         }
         inTheaterMode = on;
     }
