@@ -11,6 +11,8 @@ home videos show, making home videos, home and away videos, astronaut aliens, 10
 <script type="text/javascript" src="/javascripts/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="/javascripts/smoothplayer3.js"></script>
+<script type="text/javascript" src="/javascripts/d3.v4.min.js"></script>
+
 <link rel="stylesheet/less" type="text/css" href="/stylesheets/bootstrap.min.css" />
 <link rel="shortcut icon" href="/favicon.ico">
 
@@ -157,12 +159,26 @@ a.boxclose{
     border-radius: 50%;
     margin: auto;
     margin-top: 20px;
-
     cursor: pointer;
+    position: relative;
 }
+
+#control-btn .tooltip {
+    position: absolute;
+    top: 27px;
+    width: 200px;
+    text-align: center;
+    left: -90px;
+    font-size: 14px;
+    pointer-events: none;
+    opacity: 0;
+    text-shadow: 0 0 2px black;
+}
+
 .hold {
-    background: rgba(255, 180, 180, 0.6);
+    background: rgba(255, 100, 100, 0.6);
 }
+
 video#bgvid {
     position: fixed;
     top: 50%;
@@ -179,6 +195,25 @@ video#bgvid {
     background-size: cover;
 }
 
+.fake-player {
+    background: white;
+    text-align: center;
+    font-size: 40px;
+    color: black;
+}
+.fake-player h1 {
+    margin: 5px;
+    color: black;
+    font-size: 18px;
+}
+.fake-player h2 {
+    margin: 5px;
+    font-size: 18px;
+}
+.fake-player img {
+    margin-top: 100px;
+    height: 200px;
+}
 </style>
 </head>
 
@@ -190,7 +225,9 @@ video#bgvid {
 <audio loop src="https://raw.githubusercontent.com/wonga00/astronaut/master/public/audio/debussy.mp3" preload="auto"></audio>
 <div id="smooth-container">
     <div id="player"></div>
-    <div id="control-btn"></div>
+    <div id="control-btn">
+        <div class="tooltip">stop switching</div>
+    </div>
 </div>
 <div id="intro" class="overlay">
     <div class="message">
@@ -213,6 +250,8 @@ video#bgvid {
         <p>Beautiful footage of our earth is provided by the <a target="_blank" href="https://eol.jsc.nasa.gov/">Earth Science and Remote Sensing Unit, NASA Johnson Space Center</a>.</p>
 
         <p>Soundtrack provided by Claude Debussy's Claire de Lune performed by Caela Harrison <a target="_blank" href="https://creativecommons.org/licenses/by-nd/3.0/legalcode">(cc)</a>. </p>
+
+        <p>Try pressing spacebar.</p>
     </div>
 </div>
 
@@ -245,6 +284,7 @@ video#bgvid {
                 },
                 onResume: function() {
                     refreshControlButton();
+                    showResumeText();
                 },
                 onReady: function() {
                     socket = io.connect();
@@ -268,6 +308,7 @@ video#bgvid {
         sp.hold();
         refreshControlButton();
     }
+
     function back() {
         sp.goBack();
         if (socket) {
@@ -279,6 +320,7 @@ video#bgvid {
         ga('send', 'event', 'player', 'back', sp.currentVideoId());
         refreshControlButton();
     }
+
     function resume() {
         if (resume) {
             socket.emit('control', {
@@ -294,12 +336,28 @@ video#bgvid {
     function refreshControlButton() {
         var playerState = sp.playerState();
         if (playerState === 'hold') {
-            $('#control-btn').toggleClass('hold', true);
+            d3.select('#control-btn').classed('hold', true);
         } else if (playerState === 'back') {
-            $('#control-btn').toggleClass('hold', true);
+            d3.select('#control-btn').classed('hold', true);
         } else {
-            $('#control-btn').toggleClass('hold', false);
+            d3.select('#control-btn').classed('hold', false);
         }
+    }
+
+    function showResumeText() {
+        d3.select('#control-btn').append('div')
+            .classed('tooltip', true)
+            .style('opacity', 0)
+            .text('resuming live stream')
+            .transition()
+            .duration(100)
+            .style('opacity', 1)
+            .transition()
+            .delay(700)
+            .duration(1500)
+            .style('opacity', 0)
+            .ease(d3.easeSinInOut)
+            .remove();
     }
 
     $('#control-btn').click(function() {
@@ -307,6 +365,7 @@ video#bgvid {
             hold();
         } else {
             resume();
+            showResumeText();
         }
     });
 
@@ -327,6 +386,28 @@ video#bgvid {
         }
         inTheaterMode = on;
     }
+
+    d3.select('#control-btn')
+        .on('mouseenter', () => {
+            if (sp.playerState() === 'live') {
+                d3.select('#control-btn .tooltip')
+                    .transition()
+                    .duration(200)
+                    .style('opacity', 1);
+            }
+        })
+        .on('mouseout', () => {
+            d3.select('#control-btn .tooltip')
+                .transition()
+                .duration(200)
+                .style('opacity', 0);
+        })
+        .on('click', () => {
+            d3.select('#control-btn .tooltip')
+                .transition()
+                .duration(200)
+                .style('opacity', 0);
+        });
 
     //this is the listener for keypresses
     $('body').keydown(function(event) {
