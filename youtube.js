@@ -82,9 +82,28 @@ function search(params, cb) {
         }
 
         var data = JSON.parse(body);
+        if (data.hasOwnProperty('error')) {
+            cb(body, [], null);
+            return;
+        }
+
         var ids = data['items'].map(
             function(item) {return item['id']['videoId'];});
-        var nextParams = data['nextPageToken'];
+
+        var nextToken = data['nextPageToken'];
+        var nextParams;
+        if (nextToken) {
+            nextParams = {};
+            nextParams['nextPageToken'] = nextToken;
+            nextParams['q'] = params['q'];
+            nextParams['key'] = params['key'];
+            nextParams['part'] = params['part'];
+            nextParams['type'] = params['type'];
+            nextParams['order'] = params['order'];
+            nextParams['maxResults'] = params['maxResults'];
+            nextParams['videoEmbeddable'] = params['videoEmbeddable'];
+            nextParams['publishedAfter'] = params['publishedAfter'];
+        }
 
         listVideos(ids, function(error, vids) {
             vids = vids.filter(function(vid) {
@@ -195,6 +214,12 @@ function getVids(args) {
         search(params, function(error, vids, nextParams) {
             if (error) {
                 console.log('Got error: ' + error);
+
+                // for now we'll continue
+                if (queries.length > 0) {
+                    setTimeout(work, REQUEST_DELAY_MSEC);
+                }
+
                 return;
             }
 
@@ -210,7 +235,7 @@ function getVids(args) {
             // check if we need to schedule more work
             if (nextParams && queryVidCount[params['q']] < maxResultsPerQuery) {
                 console.log('get more...');
-                queries.push(nextParam);
+                queries.push(nextParams);
             }
 
             if (queries.length > 0) {
