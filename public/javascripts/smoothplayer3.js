@@ -79,6 +79,7 @@ function SmoothPlayer(div, args) {
             playerVars: {
                 controls: 0,
                 showinfo: 0,
+                disablekb: 1,
                 modestbranding: 1
             },
             events: {
