@@ -133,13 +133,20 @@ function listVideos(videoIds, cb) {
         uri: 'https://www.googleapis.com/youtube/v3/videos',
         qs: params
     }, function(error, response, body) {
-        var videos;
+
         if (error) {
-            videos = [];
-        } else {
-            videos = parseVids(JSON.parse(body));
+            cb(error, []);
+            return;
         }
-        cb(error, videos);
+
+        var data = JSON.parse(body);
+        if (data.hasOwnProperty('error')) {
+            cb(data, []);
+            return;
+        }
+
+        var videos = parseVids(data);
+        cb(null, videos);
     });
 }
 
@@ -172,6 +179,49 @@ function getPlaylist(playlistId, cb) {
     });
 }
 
+function createRandomString() {
+    return Math.random().toString(36).substring(2, 10);
+}
+
+var mockStrings = [
+    '7lofyg23',
+    'u3tfzhxh',
+    '905uypzx',
+    'wmcbs043',
+    'aaa',
+    'bbb'
+];
+var mockIdx = 0;
+
+function createMockString() {
+    mockIdx = (mockIdx + 1) % mockStrings.length;
+    return mockStrings[mockIdx];
+}
+
+function mockSearch(params, cb) {
+    /*
+    video object
+    {
+        id: 'lakjfkjal'
+        uploaded: timestamp // verify if this is a utc string
+        viewCount: 34
+        duration: 2384
+    }
+    */
+    // returns 2 random generated strings
+    var videos = [];
+    for (var i = 0; i < 2; i++) {
+        videos.push({
+            id: createMockString(),
+            uploaded: (new Date()).toISOString(),
+            viewCount: 10,
+            duration: 100
+        });
+    }
+
+    cb(null, videos, null);
+}
+
 /*
     retrieves youtube videos of the form
 
@@ -182,7 +232,7 @@ function getPlaylist(playlistId, cb) {
     tags: is an array of number prefixes ex. dsc, img
     startIndex:   'DSC 0001' would be 1
     endIndex:     'DSC 0234' would be 234
-    vidCallback:  function(vids) processes an array of vidids
+    vidCallback:  function(query, vids) processes an array of vidids
     endCallback:  function() called when everything is done
 */
 function getVids(args) {
@@ -213,7 +263,7 @@ function getVids(args) {
 
         search(params, function(error, vids, nextParams) {
             if (error) {
-                console.log('Got error: ' + error);
+                console.error('Search error: ' + error);
 
                 // for now we'll continue
                 if (queries.length > 0) {
@@ -224,7 +274,7 @@ function getVids(args) {
             }
 
             console.log('retrieved', vids.length, 'vids');
-            vidCallback(vids);
+            vidCallback(params.q, vids);
 
             if (queryVidCount[params.q]) {
                 queryVidCount[params['q']] += vids.length;

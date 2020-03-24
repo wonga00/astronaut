@@ -30,13 +30,11 @@ app.configure(function(){
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   io.set('log level', '3'); // debug level
-  videoStream.setCrawlEnabled(false);
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler());
   io.set('log level', '1'); // warn level
-  videoStream.setCrawlEnabled(true);
 });
 
 
@@ -79,15 +77,15 @@ app.get('/z', function(req, res) {
     title: 'Admin',
     numVideos: videoStream.numVideos(),
     numConnections: io.sockets.clients().length,
-    lastRefresh: videoStream.lastRefresh(),
     lastHeld: lastHeld
   });
 });
 
 app.get('/grid', function(req, res) {
+  var videos = videoStream.videos();
   res.render('grid.ejs', {
     title: 'Grid',
-    videos: videoStream.videos(),
+    videos: videos,
     moment: moment
   });
 });
