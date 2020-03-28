@@ -1,7 +1,6 @@
 require('log-timestamp');
 
-var csv = require('csv')
-  , _ = require('lodash')
+var _ = require('lodash')
   , fs = require('fs')
   , path = require('path')
   , youtube = require('./youtube')

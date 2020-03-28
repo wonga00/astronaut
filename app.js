@@ -9,34 +9,23 @@ var express = require('express')
   , app = express()
   , http = require('http')
   , server = http.createServer(app)
-  , io = require('socket.io').listen(server)
+  , io = require('socket.io')(server)
   , moment = require('moment')
   , videoStream = require('./videoStream.js')
   , numViewers = 0
   , lastHeld;
 
-
 /* --------- CONFIG ------------ */
 
-app.configure(function(){
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'ejs');
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
-});
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(express.static(__dirname + '/public'));
 
-app.configure('development', function(){
+if (process.env.NODE_ENV === 'development') {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-  io.set('log level', '3'); // debug level
-});
-
-app.configure('production', function(){
+} else if (process.env.NODE_ENV === 'production') {
   app.use(express.errorHandler());
-  io.set('log level', '1'); // warn level
-});
-
+}
 
 function logEvent(eventType, data) {
   console.log("event", {
@@ -48,7 +37,7 @@ function logEvent(eventType, data) {
 
 /* ---------- REAL-TIME ---------- */
 
-io.sockets.on('connection', function(socket) {
+io.on('connection', function(socket) {
     socket.emit('video', videoStream.currentVid());
     socket.emit('held', lastHeld);
 

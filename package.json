@@ -1,16 +1,17 @@
 {
   "name": "application-name",
-  "node": "0.10.34",
+  "node": "12.16.1",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "csv": "0.2.2",
-    "ejs": "0.8.3",
-    "express": "3.0.3",
-    "lodash": "4.17.15",
-    "log-timestamp": "0.1.2",
-    "moment": "2.8.4",
-    "request": "2.58.0",
-    "socket.io": "0.9.13"
+    "csv-parse": "^4.8.8",
+    "csv-stringify": "^5.3.6",
+    "ejs": "^3.0.1",
+    "express": "^4.17.1",
+    "lodash": "^4.17.15",
+    "log-timestamp": "^0.3.0",
+    "moment": "^2.24.0",
+    "request": "^2.88.2",
+    "socket.io": "^2.3.0"
   }
 }

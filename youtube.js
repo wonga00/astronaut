@@ -2,9 +2,9 @@
     getting youtube videos
 */
 
-require('./arrayutil');
-var request = require('request');
-var moment = require('moment');
+var request = require('request'),
+    moment = require('moment'),
+    _ = require('lodash');
 
 var MINIMUM_VIDEO_DURATION_SEC = 18;
 var REQUEST_DELAY_MSEC = 2000;
@@ -252,7 +252,7 @@ function getVids(args) {
 
     var queries = createQueries(startIndex, endIndex, tags);
     // shuffle them so the indices are not contiguous
-    queries.shuffle();
+    queries = _.shuffle(queries);
 
     var queryVidCount = {}; // keeps track of page counts per query
 
