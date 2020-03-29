@@ -264,12 +264,6 @@ function getVids(args) {
         search(params, function(error, vids, nextParams) {
             if (error) {
                 console.error('Search error: ' + error);
-
-                // for now we'll continue
-                if (queries.length > 0) {
-                    setTimeout(work, REQUEST_DELAY_MSEC);
-                }
-
                 return;
             }
 
