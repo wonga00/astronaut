@@ -1,5 +1,4 @@
 require('log-timestamp');
-
 var _ = require('lodash')
   , fs = require('fs')
   , path = require('path')
@@ -88,10 +87,17 @@ function copyFile() {
     .pipe(fs.createWriteStream(outfile));
 }
 
-var argv = require('minimist')(process.argv.slice(2)),
-    tags = argv['_'],
-    start = parseInt(argv['start']),
-    end = parseInt(argv['end']);
+var argv = require('minimist')(process.argv.slice(2));
+    tags = argv['_'];
+
+if (!tags.length || !argv.hasOwnProperty('start') || !argv.hasOwnProperty('end')) {
+  console.log('example options: --start 1 --end 34 dsc img');
+  process.exit(0);
+}
+
+start = parseInt(argv['start']),
+end = parseInt(argv['end']);
+
 
 copyFile();
 youtube.getVids({
