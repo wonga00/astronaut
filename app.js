@@ -23,8 +23,6 @@ app.use(express.static(__dirname + '/public'));
 
 if (process.env.NODE_ENV === 'development') {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-} else if (process.env.NODE_ENV === 'production') {
-  app.use(express.errorHandler());
 }
 
 function logEvent(eventType, data) {
