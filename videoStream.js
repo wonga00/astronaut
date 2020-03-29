@@ -6,8 +6,7 @@
     receives a video, timestamp at regular intervals
 */
 
-var csv = require('csv')
-  , _ = require('lodash')
+var _ = require('lodash')
   , youtube = require('./youtube')
   , videoTable = require('./videotable');
 
