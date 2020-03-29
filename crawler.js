@@ -56,7 +56,6 @@ function mergeVideos(existingVideos, newVideos) {
   return videos;
 }
 
-
 function appendVideos(query, newVideos) {
   // this function stores the videos in the data file
   // it maintains a maximum size and a level of freshness in the data
@@ -72,16 +71,6 @@ function appendVideos(query, newVideos) {
      // merge videos
      var videos = mergeVideos(existingVideos, newVideos);
      videoTable.writeVideos(videos);
-  });
-}
-
-function crawl() {
-  youtube.getVids({
-    tags: ['dsc', 'mvi', 'mov', 'img'],
-    startIndex: 1,
-    endIndex: 100,
-    maxResultsPerQuery: 20,
-    vidCallback: appendVideos
   });
 }
 
@@ -102,15 +91,12 @@ if (!tags.length || !argv.hasOwnProperty('start') || !argv.hasOwnProperty('end')
   process.exit(0);
 }
 
-start = parseInt(argv['start']),
-end = parseInt(argv['end']);
-
-
 copyFile();
+
 youtube.getVids({
   tags: tags,
-  startIndex: start,
-  endIndex: end,
+  startIndex: parseInt(argv['start']),
+  endIndex: parseInt(argv['end']),
   maxResultsPerQuery: 20,
   vidCallback: appendVideos
 });
