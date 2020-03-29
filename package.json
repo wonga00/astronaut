@@ -10,6 +10,7 @@
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "log-timestamp": "^0.3.0",
+    "minimist": "^1.2.5",
     "moment": "^2.24.0",
     "request": "^2.88.2",
     "socket.io": "^2.3.0"

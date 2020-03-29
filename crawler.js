@@ -88,7 +88,17 @@ function copyFile() {
     .pipe(fs.createWriteStream(outfile));
 }
 
-copyFile();
-crawl();
+var argv = require('minimist')(process.argv.slice(2)),
+    tags = argv['_'],
+    start = parseInt(argv['start']),
+    end = parseInt(argv['end']);
 
+copyFile();
+youtube.getVids({
+  tags: tags,
+  startIndex: start,
+  endIndex: end,
+  maxResultsPerQuery: 20,
+  vidCallback: appendVideos
+});
 
