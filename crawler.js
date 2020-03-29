@@ -2,6 +2,7 @@ require('log-timestamp');
 var _ = require('lodash')
   , fs = require('fs')
   , path = require('path')
+  , moment = require('moment')
   , youtube = require('./youtube')
   , videoTable = require('./videotable');
 
@@ -40,6 +41,12 @@ function mergeVideos(existingVideos, newVideos) {
   });
 
   videos = _.orderBy(videos, function(a) { return a.uploaded }, 'desc');
+  var lastWeek = moment().subtract(1, 'week');
+
+  videos = videos.filter(v => {
+    return new Date(v.uploaded) > lastWeek;
+  });
+
   videos = videos.slice(0, MAX_VIDEOS);
   videos = _.orderBy(videos, function(a) { return a.idx }, 'asc');
   videos.forEach(function(video) {
