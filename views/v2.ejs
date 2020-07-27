@@ -316,6 +316,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             })
         }
         ga('send', 'event', 'player', 'hold', sp.currentVideoId());
+        dataLayer.push({
+          'videoID': sp.currentVideoId(),
+          'event': 'hold'
+        });
         sp.hold();
         refreshControlButton();
     }
