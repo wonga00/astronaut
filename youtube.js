@@ -94,7 +94,7 @@ function search(params, cb) {
         var nextParams;
         if (nextToken) {
             nextParams = {};
-            nextParams['nextPageToken'] = nextToken;
+            nextParams['pageToken'] = nextToken;
             nextParams['q'] = params['q'];
             nextParams['key'] = params['key'];
             nextParams['part'] = params['part'];
